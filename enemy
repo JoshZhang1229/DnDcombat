@@ -1,5 +1,3 @@
-
-  
 '''
 Dungeon exploration thing
 By Josh Zhang
@@ -24,9 +22,12 @@ combat narrated turn by turn
 
 2020.06.27
 Some major shifts on the back end for combat.
-Shifted away from it's D&D orgins to be more a story based game.
+Shifted away from it's D&D origins to be more of a story based game.
 The front end user experience hasn't changed much.
 However the final objective this game has.
+
+2020.07.16
+Converted from python 2 to python 3
 
 '''
 
@@ -37,15 +38,13 @@ import random
 # generate random integer values
 from random import seed
 from random import randint
-
-# seed random number generator
-
+# seed random number generator=
 from datetime import datetime
 random.seed(datetime.now())
 
 
 #debug
-encounterTest = 0
+encounterTest = False
 
 #basic combat stats
 #servant = 0 / enemy = 1
@@ -60,10 +59,9 @@ global supplies
 supplies = 3
 
 #setup
-gameOn = 1
+gameOn = True
 encounterCount = 1
 finish = 0
-distanceTraveled = 0
 
 playerOffense = 1
 playerDefense = 1
@@ -73,7 +71,7 @@ foeDefense = 1
 # ALL FUNCTIONS
 
 #battle - should not be modified
-def battle(getRidOf):
+def battle(thisDoesntReallyMatterButTheCodeBreaksWithoutIt):
     playerCombatOffense = playerOffense - foeDefense
     foeCombatOffense = foeOffense - playerDefense
 
@@ -95,39 +93,40 @@ def battle(getRidOf):
 
 #Encounters
 
+
 #bandits
 def banditTurn():
     foeOffense = 2
     foeDefense = 1
 
 def banditEncounter():
-    global finish
     finish = 0
     global gold
     while finish == 0:
         hp[1] = 12
-        print '''
+        print ('''
 From the shadows, a group of figures weilding knives and swords appear, blocking your path."
 "Your wallet or your life!"
 To refuse and fight the bandits, enter 1
 To give up 10 gold in exchange for your life, enter 2
-        '''
-        s = raw_input()
+        ''')
+        s = input()
         if s == "1":
             battle(banditTurn())
-            print "You chose to fight the bandits!"
-            print "You are left with", hp[0], "health"
+            print ("You chose to fight the bandits!")
+            print ("You are left with", hp[0], "health")
             finish = 1
         elif s == "2":
             if gold >= 10:
                 gold = gold - 10
-                print "You hand over the gold, and the bandits leave. You sigh, just glad to be alive."
+                print ("You hand over the gold, and the bandits leave. You sigh, just glad to be alive.")
                 finish = 1
             else:
-                print "You don't have enough gold!"
+                print ("You don't have enough gold!")
         else:
-            print "Invalid input, please try again"
-    return 1;
+            print ("Invalid input, please try again")
+
+
 
 #farmHouse
 def farmerTurn():
@@ -135,50 +134,50 @@ def farmerTurn():
     foeDefense = 1
 
 def farmHouse():
-    print '''
+    print ('''
 In the night, you come upon a farmhouse. The familly is sleepling sound inside. You see their bags are all packed, ready to leave the next morning you presume.
 Most of their goods are tied under multiple layers of fabric and rope. You do however spy a woodcutter's axe on their nightstand.
 To attempt to steal the axe, enter 1.
 To just leave the farmhouse, enter 2.
-    '''
-    s = raw_input()
+    ''')
+    s = input()
     if s == "1":
-        print '''
+        print ('''
 You sneak up to the nightstand. You grab the axe but as you do you shift it against the table slightly and lets out a faint scrapping sound
 The woman in bed's head shift and you see her open her sleepy eyes and looks over at you.
 To silence her pernamently, enter 1
 To try and run for it, enter 2
-        '''
+        ''')
         playerOffense = 2
-        s = raw_input()
+        s = input()
         if s == "1":
-            print '''
+            print ('''
 You wrap one hand around the woman's mouth muffling her cries. You then sink the tip of hte axe blade into her neck. She squirms against your grip but her struggle quickly weaken.
 You see the light go out of her eyes. The dwarf next to her, you assume her husband sturs in his sleep. You let go of her body and quickly make for the front door.
 However you only make it halfway door the stairs when you hear a cry of anguish from the bedroom.
 "Faith, Faith my dear please, open you eyes!" This is followed by sobs followed the sound of a pair of feet thuding rapidly towards you.
 "You twisted son a bitch, I'll kill you!"
-As you run, you glance in the door next to you and see a bunh bed, and two small figures under the blankets.
-            '''
+As you run, you glance in the door next to you and see a bunk bed, and two small figures under the blankets.
+            ''')
         elif s == "2":
-            print '''
+            print ('''
 You grip the axe handle and rush for the doorway.
-            '''
+            ''')
     elif s == "2":
-        print "You creep back out of the farmhouse, not wishing to hamper an innocent familly's chance of survival."
-        return 2;
+        print ("You creep back out of the farmhouse, not wishing to hamper an innocent familly's chance of survival.")
+
 
 #healing pool
 def healingPool():
-    print "Your lucky day! you found a healing pool!"
+    print ("Your lucky day! you found a healing pool!")
     hp[0] = hp[0] + randint(3,6)
     if hp[0] > maxHp[0]:
         hp[0] = maxHp[0]
     if hp[0] == maxHp[0]:
-        print "Your health has been fully restored!"
+        print ("Your health has been fully restored!")
     else:
-        print "Your health has been restored to" , hp[0]
-    return 3;
+        print ("Your health has been restored to" , hp[0])
+
 
 
 #wolf
@@ -187,15 +186,15 @@ def wolfTurn():
     foeDefense = 1
 
 def wolfEncounter():
-    print "Wolves ambush you!"
+    print ("Wolves ambush you!")
     hp[1] = 5
     battle(wolfTurn())
-    print "You are left with", hp[0], "health"
-    return 4;
+    print ("You are left with", hp[0], "health")
+
     
 
 #encounter list setup
-encounterList = [1,2,3,4] # 1,2,3,4
+encounterList = [1,2,3,4] #the number of terms in this list should match the number of encounters
 
 
 #Determines what stage you are on and selects the odds for each encounter accordingly
@@ -204,24 +203,25 @@ def encounterOdds():
     encounterCount = encounterCount + 1
 
 
-    if encounterCount < 100:
-        if encounterTest == 1:
+    if encounterCount < 100: # a left over idea to change the encounters avaliable 
+        # once the player reached certain distances into the game
+        if encounterTest == True:
             encounterFateTest()
     
-        else:
-			x = random.choice(encounterList)
-			if x == 1:
-				banditEncounter()
-				encounterList.remove(1)
-			elif x == 2:
-				farmHouse()
-				encounterList.remove(2)
-			elif x == 3:
-				healingPool()
-				encounterList.remove(3)
-			elif x == 4:
-				wolfEncounter()
-				encounterList.remove(4)
+        else: #the number of diffrent statements below should match each item in the encounter's list
+            x = random.choice(encounterList)
+            if x == 1:
+                banditEncounter()
+                encounterList.remove(1)
+            elif x == 2:
+                farmHouse()
+                encounterList.remove(2)
+            elif x == 3:
+                healingPool()
+                encounterList.remove(3)
+            elif x == 4:
+                wolfEncounter()
+                encounterList.remove(4)
 
 
 #debug
@@ -233,7 +233,7 @@ initialization = 0
 def initializationCheck():
     global initialization
     if initialization == 0:
-        print '''
+        print ('''
 You are dwarven warrior, part of army which was called in to fight back an invasion from the your southern neighbors.
 Unfortunately, your army was defeated. You commanding officer ordered eveyone to hold untill thier last to buy time for civilians to escape.
 Fear overwhelmed you however as your line crumbled. You fled, away from the battle field, northwards to escape the invasion.
@@ -241,48 +241,48 @@ Now a deserter, you must avoid enemy and former allies alike to survive.
 Having needed to discard all evidence of your service, you left nearly all your equipment behind.
 As you being your journey northwards, your future seems uncertain. 
 You are uncertain of your final destiantion, only that your journey leads you farther away from your grave.
-        '''
+        ''')
         initialization = 1
 
-# RUNNING THE GAME, gameOn = 1
-while(gameOn) == 1:
+# RUNNING THE GAME, gameOn = True
+while(gameOn) == True:
     initializationCheck()
     if hp[0] <= 0:
-        print "You have been slain..."
-        gameOn = 0
+        print ("You have been slain...")
+        gameOn = False
     if encounterCount == 4: #this number should be one greater than the number of desired encounters
-        print "You have completed your quest!"
-        gameOn = 0
-    if gameOn == 1:
-        print "_______________________"
-        print "You are on encounter numuber", encounterCount;
-        print '''
+        print ("You have completed your quest!")
+        gameOn = False
+    if gameOn == True:
+        print ("_______________________")
+        print ("You are on encounter numuber", encounterCount)
+        print ('''
 To continue on your adventure enter 1
 To rest and recovery health at the cost of supplies, enter 2
 To see your stats enter 3
 To quit the game enter 4
-        '''
-        s = raw_input()
+        ''')
+        s = input()
         if s == "1":
             encounterOdds()
         elif s == "2":
             if supplies >= 1:
-                print "You spend a few days resting and recover from your wounds. You use up some excess supplies"
+                print ("You spend a few days resting and recover from your wounds. You use up some excess supplies")
                 supplies = supplies - 1
-                print "You have" , supplies , "supplies remaining"
+                print ("You have" , supplies , "supplies remaining")
                 hp[0] = hp[0] + 5
                 if hp[0] > maxHp[0]:
                     hp[0] = maxHp[0]
                 if hp[0] == maxHp[0]:
-                    print "Your health has been fully restored!"
+                    print ("Your health has been fully restored!")
                 else:
-                    print "Your health has been restored to" , hp[0]
+                    print ("Your health has been restored to" , hp[0])
             else:
-                print "You don't have any excess supplies and must press on!"
+                print ("You don't have any excess supplies and must press on!")
         elif s == "3":
-            print "Gold =", gold, "Supplies =", supplies
+            print ("Gold =", gold, "Supplies =", supplies)
         elif s == "4":
-            print "You have quit the game"
-            gameOn = 0
+            print ("You have quit the game")
+            gameOn = False
         else:
-            print "Invalid input, please try again"
+            print ("Invalid input, please try again")
