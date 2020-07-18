@@ -1,0 +1,251 @@
+import pygame
+
+pygame.init()
+
+screen = pygame.display.set_mode((800,600))
+
+pygame.display.set_caption("D&D Barbarian subclasses")
+
+#font setup
+font = pygame.font.Font('freesansbold.ttf', 30)
+font_big = pygame.font.Font('freesansbold.ttf', 50)
+font_small = pygame.font.Font('freesansbold.ttf', 18)
+
+#display control setup
+main_menu_display = True
+
+beserker_display = False
+
+totem_warrior_p1_display = False
+
+totem_warrior_p2_display = False
+
+#all the page displays
+
+#main menu
+def main_menu():
+    title = font_big.render('''D&D Barbarian subclasses''' , True, (0, 0, 0))
+    screen.blit(title, (67, 50))
+
+    creator = font_small.render('''Compiled by Josh Zhang''' , True, (0, 0, 0))
+    screen.blit(creator, (290, 110))
+
+    beserker_select = font.render('''Beserker''' , True, (0, 0, 0))
+    screen.blit(beserker_select, (75, 220))
+
+    totem_warrior_select = font.render('''Totem Warrior''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_select, (425, 220))
+
+
+#beserker
+def beserker():
+    beserker_text1 = font.render('''Frenzy''' , True, (0, 0, 0))
+    screen.blit(beserker_text1, (10, 10))
+
+    beserker_text2 = font_small.render('''Starting when you choose this path at 3rd level, you can go into a frenzy when you rage. ''' , True, (0, 0, 0))
+    screen.blit(beserker_text2, (10, 40))
+
+    beserker_text3 = font_small.render('''If you do so, for the duration of your rage you can make a single melee weapon attack as ''' , True, (0, 0, 0))
+    screen.blit(beserker_text3, (10, 60))
+
+    beserker_text4 = font_small.render('''a bonus action on each of your turns after this one. When your rage ends, you suffer one ''' , True, (0, 0, 0))
+    screen.blit(beserker_text4, (10, 80))
+
+    beserker_text5 = font_small.render('''level of exhaustion. ''' , True, (0, 0, 0))
+    screen.blit(beserker_text5, (10, 100))
+
+    beserker_text = font.render('''Mindless Rage''' , True, (0, 0, 0))
+    screen.blit(beserker_text, (10, 120))
+
+    beserker_text = font_small.render('''Beginning at 6th level, you can't be charmed or frightened while raging. If you are ''' , True, (0, 0, 0))
+    screen.blit(beserker_text, (10, 150))
+
+    beserker_text = font_small.render('''charmed or frightened when you enter your rage, the effect is suspended for the duration ''' , True, (0, 0, 0))
+    screen.blit(beserker_text, (10, 170))
+
+    beserker_text = font_small.render('''of the rage.''' , True, (0, 0, 0))
+    screen.blit(beserker_text, (10, 190))
+
+
+#totem warrior
+#p1
+def totem_warrior_p1():
+
+    totem_warrior_text = font.render('''Spirit Seeker''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text, (10, 10))
+
+    totem_warrior_text = font_small.render('''Yours is a path that seeks attunement with the natural world, giving you a kinship with ''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text, (10, 40))
+
+    totem_warrior_text = font_small.render('''beasts. At 3rd level when you adopt this path, you gain the ability to cast the Beast Sense  ''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text, (10, 60))
+
+    totem_warrior_text4 = font_small.render('''and Speak with Animals spells, but only as rituals. ''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text4, (10, 80))
+
+    totem_warrior_text5 = font.render('''Totem Spirit ''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text5, (10, 100))
+
+    totem_warrior_text6 = font_small.render('''At 3rd level, when you adopt this path, you choose a totem spirit and gain its feature. ''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text6, (10, 130))
+
+    totem_warrior_text7 = font_small.render('''that incorporates fur or feathers, claws, teeth, or bones of the totem animal. At your ''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text7, (10, 150))
+
+    totem_warrior_text8 = font_small.render('''option, you also gain minor physical attributes that are reminiscent of your totem spirit.''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text8, (10, 170))
+
+    totem_warrior_text9 = font_small.render('''For example, if you have a bear totem spirit, you might be unusually hairy and ''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text9, (10, 190))
+
+    totem_warrior_text10 = font_small.render('''thick-skinned, or if your totem is the eagle, your eyes turn bright yellow.''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text10, (10, 210))
+
+    totem_warrior_text11 = font_small.render('''Bear. While raging, you have resistance to all damage except psychic damage. The spirit ''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text11, (10, 230))
+
+    totem_warrior_text12 = font_small.render('''of the bear makes you tough enough to stand up to any punishment.''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text12, (10, 250))
+
+    totem_warrior_text13 = font_small.render('''Eagle. While you're raging and aren't wearing heavy armor, other creatures have ''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text13, (10, 270))
+
+    totem_warrior_text14 = font_small.render('''disadvantage on opportunity attack rolls against you, and you can use the Dash action ''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text14, (10, 290))
+
+    totem_warrior_text15 = font_small.render('''as a bonus action on your turn. The spirit of the eagle makes you into a predator who can ''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text15, (10, 310))
+
+    totem_warrior_text16 = font_small.render('''weave through the fray with ease.''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text16, (10, 330))
+
+    totem_warrior_text17 = font_small.render('''Wolf. While you're raging, your friends have advantage on melee attack rolls against any''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text17, (10, 350))
+
+    totem_warrior_text17 = font_small.render('''creature within 5 feet of you that is hostile to you. The spirit of the wolf makes you a ''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text17, (10, 370))
+
+    totem_warrior_text17 = font_small.render('''leader of hunters.''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text17, (10, 390))
+
+    totem_warrior_text17 = font.render('''Aspect of the Beast''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text17, (10, 410))
+
+    totem_warrior_text17 = font_small.render('''At 6th level, you gain a magical benefit based on the totem animal of your choice. ''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text17, (10, 440))
+
+    totem_warrior_text17 = font_small.render('''You can choose the same animal you selected at 3rd level or a different one.''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text17, (10, 460))
+
+#p2
+def totem_warrior_p2():
+    totem_warrior_text = font_small.render('''Bear. You gain the might of a bear. Your carrying capacity (including maximum load ''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text, (10, 10))
+
+    totem_warrior_text = font_small.render('''and maximum lift) is doubled, and you have advantage on Strength checks made to ''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text, (10, 30)) 
+
+    totem_warrior_text = font_small.render('''push, pull, lift, or break objects.''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text, (10, 50)) 
+
+    totem_warrior_text = font_small.render('''Eagle. You gain the eyesight of an eagle. You can see up to 1 mile away with no ''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text, (10, 70)) 
+
+    totem_warrior_text = font_small.render('''difficulty, able to discern even fine details as though looking at something no''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text, (10, 90)) 
+
+    totem_warrior_text = font_small.render('''more than 100 feet away from you. Additionally, dim light doesn't impose ''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text, (10, 110)) 
+
+    totem_warrior_text = font_small.render('''disadvantage on your Wisdom (Perception) checks.''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text, (10, 130)) 
+
+    totem_warrior_text = font_small.render('''Wolf. You gain the hunting sensibilities of a wolf. You can track other creatures ''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text, (10, 150)) 
+
+    totem_warrior_text = font_small.render('''while traveling at a fast pace, and you can move stealthily while traveling ''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text, (10, 170)) 
+
+    totem_warrior_text = font_small.render('''at a normal pace.''' , True, (0, 0, 0))
+    screen.blit(totem_warrior_text, (10, 190)) 
+
+#main menu select
+def main_menu_select():
+    main_menu_select = font.render('''Back''' , True, (0, 0, 0))
+    screen.blit(main_menu_select, (700, 550))
+
+#next page select
+def next_page_select():
+    next_page = font.render('''Next''' , True, (0, 0, 0))
+    screen.blit(next_page, (10, 550))
+
+#previous page select
+def previous_page_select():
+    previous_page = font.render('''Previous''' , True, (0, 0, 0))
+    screen.blit(previous_page, (90, 550))
+
+#running the program
+running = True
+while running:
+
+    screen.fill((252,169,3))
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mx, my = pygame.mouse.get_pos()
+
+            #print (mx, my)
+            
+            #main menu
+            if main_menu_display == True and 70 < mx < 220 and 200 < my < 260:
+                main_menu_display = False
+                beserker_display = True
+
+            if main_menu_display == True and 400 < mx < 640 and 200 < my < 260:
+                main_menu_display = False
+                totem_warrior_p1_display = True
+            
+            #beserker
+            if beserker_display == True and mx > 690 and my > 540:
+                beserker_display = False
+                main_menu_display = True
+            
+            #totem warrior p1
+            if totem_warrior_p1_display == True and mx > 690 and my > 540:
+                totem_warrior_p1_display = False
+                main_menu_display = True
+
+            if totem_warrior_p1_display == True and 10 < mx < 80 and 550 < my < 580:
+                totem_warrior_p1_display = False
+                totem_warrior_p2_display = True
+            
+            #totem warrior p2
+            if totem_warrior_p2_display == True and mx > 690 and my > 540:
+                totem_warrior_p2_display = False
+                main_menu_display = True
+
+            if totem_warrior_p2_display == True and 90 < mx < 225 and 550 < my < 580:
+                totem_warrior_p2_display = False
+                totem_warrior_p1_display = True
+
+    if main_menu_display == True:
+        main_menu()
+    
+    if beserker_display == True:
+        beserker()
+        main_menu_select()
+
+    if totem_warrior_p1_display == True:
+        totem_warrior_p1()
+        main_menu_select()
+        next_page_select()
+    
+    if totem_warrior_p2_display == True:
+        totem_warrior_p2()
+        main_menu_select()
+        previous_page_select()
+
+    pygame.display.update()
