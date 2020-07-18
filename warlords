@@ -9,9 +9,9 @@ Just do p1 fisrt, then add p2 after everything works
 
 gotta add for the units in each lane to actually do damamge each turn, currently the while loop doesn't have any side taking damage
 
-There also probably should be a way ato check all the stats
+There also probably should be a way to check all the stats
 
-Note that defense and resistance stats don't go dont naturally. So stacking these becomes really strong late game
+Note that defense and resistance stats don't go down naturally. So stacking these becomes really strong late game
 However obviously hp should be lower at that point so... this is nice
 Could create some diffrent stratergies, some just build up physcial and magical attacks early
 Others build up defense to be OP late game
@@ -29,6 +29,9 @@ Added three troops.
 The focus rn is to get it so that adding more troops is less tedious
 Done! automated the process by combining user input string with another one, and then using eval() to run that code
 Adding troops is actual so simple now
+
+2020/07/18
+Just fixing some spelling in the comments.
 '''
 
 #all the classes
