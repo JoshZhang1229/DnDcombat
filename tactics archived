@@ -1,0 +1,782 @@
+'''
+2020/07/18
+
+Three physical weapon types: light, polearm, heavy, ranged
+
+as I don't want to steal the weapon truangle (also cuase how it makes no logcial sense lmao)
+
+each weapon type has diffrent stats/abilities
+
+light - speed gives bonus to damage and accuracy
+polearm - ability to ignore percentage of target's defense
+heavy - gives a percentage bonus to strength
+ranged - two range, low might
+
+each character has weapon ranks, diffrent abilites/stat bonuses unlock at higher ranks. Goes from E to S, need at least an E to weild the weapon type
+
+Magic weapon types: elemental, divine, dark, healing
+all magic by default have two range also many character has lower res, so all magic should have much lower might than physical weapons
+
+elemental - percentage bonus to magic (raw power)
+divine - ignore pertage of resistance
+
+being able to be on backline mean you get evasion bonus (maybe also acc bonus)
+no bonus for front line
+backline is stricly better (hence why two range weapons need to be worse)
+only half of you units can be on backline?
+can have as many frontline as you wish
+
+'''
+#setup
+import math
+import random
+# generate random integer values
+from random import seed
+from random import randint
+# seed random number generator=
+from datetime import datetime
+random.seed(datetime.now())
+
+class Unit:
+    level = 0
+    strength = 0
+    magic = 0
+    speed = 0
+    precision = 0
+    evasion = 0
+    maxhp = 0
+    hp = 0
+    defense = 0
+    resistance = 0
+    weapon_rank = 0
+
+    growth_strength = 0
+    growth_magic = 0
+    growth_speed = 0
+    growth_precision = 0
+    growth_evasion = 0
+    growth_hp = 0
+    growth_defense = 0
+    growth_resistance = 0
+
+    def __init__(self, base_level, base_strength, base_magic, base_speed, base_precision, base_evasion, base_hp, base_defense, base_resistance, \
+        growth_strength, growth_magic, growth_speed, growth_precision, growth_evasion, growth_hp, growth_defense, growth_resistance):
+        self.level = base_level
+        self.strength = base_strength
+        self.magic = base_magic
+        self.speed = base_speed
+        self.precision = base_precision
+        self.evasion = base_evasion
+        self.maxhp = base_hp
+        self.hp = self.maxhp
+        self.defense = base_defense
+        self.resistance = base_resistance
+        self.weapon_rank = math.ceil(self.level / 5)
+
+        self.growth_strength = growth_strength
+        self.growth_magic = growth_magic
+        self.growth_speed = growth_speed
+        self.growth_precision = growth_precision
+        self.growth_evasion = growth_evasion
+        self.growth_hp = growth_hp
+        self.growth_defense = growth_defense
+        self.growth_resistance = growth_resistance
+    
+    def level_up(self):
+        if self.level < 25:
+            self.level += 1
+            if randint (1, 100) <= self.growth_strength:
+                self.strength += 1
+            if randint (1, 100) <= self.growth_magic:
+                self.magic += 1
+            if randint (1, 100) <= self.growth_speed:
+                self.speed += 1          
+            if randint (1, 100) <= self.growth_precision:
+                self.precision += 1
+            if randint (1, 100) <= self.growth_evasion:
+                self.evasion += 1
+            if randint (1, 100) <= self.growth_hp:
+                self.maxhp += 1
+            if randint (1, 100) <= self.growth_defense:
+                self.defense += 1
+            if randint (1, 100) <= self.growth_resistance:
+                self.resistance += 1
+
+#basic classes
+class Heavy(Unit):
+
+    def Heavy_attack(self, weapon, target):
+        chance_to_miss = (1 - self.precision / target.evasion ) * 100
+        if randint (1, 100) >= chance_to_miss:
+            target.hp = target.hp - (self.strength * (1 + 0.2 * self.weapon_rank) + weapon.might - target.defense)
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1, 100) >= chance_to_miss:
+                target.hp = target.hp - (self.strength * (1 + 0.2 * self.weapon_rank) + weapon.might - target.defense)
+
+class Polearm(Unit):
+
+    def Polearm_attack(self, weapon, target):
+        chance_to_miss = (1 - self.precision / target.evasion ) * 100
+        if randint (1, 100) >= chance_to_miss:
+            target.hp = target.hp - (self.strength + weapon.might - target.defense * (1 - 0.1 * self.weapon_rank))
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1, 100) >= chance_to_miss:
+                target.hp = target.hp - (self.strength + weapon.might - target.defense * (1 - 0.1 * self.weapon_rank))
+
+class Quick(Unit):
+
+    def Quick_attack(self, weapon, target):
+        chance_to_miss = (1 - (self.precision + self.speed * 0.025 * self.weapon_rank)/ target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.strength + weapon.might - target.defense)
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.strength + weapon.might - target.defense)
+
+class Range(Unit):
+
+    def Range_attack(self, weapon, target):
+        chance_to_miss = (1 - self.precision / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.strength + weapon.might - target.defense)
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.strength + weapon.might - target.defense)
+
+class Elemental(Unit):
+
+    def Elemental_attack(self, weapon, target):
+        chance_to_miss = (1 - self.precision / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.magic * (1 + 0.2 * self.weapon_rank) + weapon.might - target.resistance)
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.magic * (1 + 0.2 * self.weapon_rank) + weapon.might - target.resistance)
+
+class Divine(Unit):
+
+    def Divine_attack(self, weapon, target):
+        chance_to_miss = (1 - self.precision / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.magic + weapon.might - target.resistance * (1 - 0.1 * self.weapon_rank))
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.magic + weapon.might - target.resistance * (1 - 0.1 * self.weapon_rank))
+
+class Dark(Unit):
+
+    def Dark_attack(self, weapon, target):
+        chance_to_miss = (1 - self.precision / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.magic + weapon.might - target.resistance)
+            self.hp = self.hp + (self.magic + weapon.might - target.resistance) * (0.08 * self.weapon_rank)
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.magic + weapon.might - target.resistance)
+                self.hp = self.hp + (self.magic + weapon.might - target.resistance) * (0.08 * self.weapon_rank)
+        if self.hp > self.maxhp:
+            self.hp = self.maxhp
+
+class Healing(Unit):
+
+    def Healing_attack(self, weapon, target):
+        target.hp = target.hp + (self.magic + weapon.might) * (0.5 + 0.1 * self.weapon_rank)
+
+#advanced classes
+#martial
+class Blade_master(Unit):
+
+    #can triple attack if speed is significantly higher than enemy
+    def Blade_storm(self, weapon, target):
+        chance_to_miss = (1 - (self.precision + self.speed * 0.025 * self.weapon_rank) / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.strength + weapon.might - target.defense)
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.strength + weapon.might - target.defense)
+        if self.speed - weapon.weight - target.speed >= 15:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.strength + weapon.might - target.defense)
+
+    #ignores part of foe’s defense, ignores part of weapon’s might
+    def Ghost_blade(self, weapon, target):
+        chance_to_miss = (1 - (self.precision + self.speed * 0.025 * self.weapon_rank) / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.strength + weapon.might - target.defense * 0.75)
+        if self.speed - weapon.weight * 0.33 - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.strength + weapon.might - target.defense * 0.75)
+
+class Ranger(Unit):
+
+    #bonus damage based on speed
+    def Unerring_strike_range(self, weapon, target):
+        chance_to_miss = (1 - self.precision / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.strength + weapon.might + self.speed * 0.45 - target.defense)
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.strength + weapon.might + self.speed * 0.45 - target.defense)
+
+    def Unerring_strike_quick(self, weapon, target):
+        chance_to_miss = (1 - (self.precision + self.speed * 0.025 * self.weapon_rank) / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.strength + weapon.might + self.speed * 0.45 - target.defense)
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.strength + weapon.might + self.speed * 0.45 - target.defense)         
+
+class Berserker(Unit):
+
+    #bonus damage based on damage dealt, ignores part of weapon’s weight
+    def Rampaging_fury_polearm(self, weapon, target):
+        chance_to_miss = (1 - self.precision / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - ((self.strength + weapon.might) * 1.5 - target.defense * (1 - 0.1 * self.weapon_rank))
+        if self.speed - weapon.weight * 0.33 - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - ((self.strength + weapon.might) * 1.5 - target.defense * (1 - 0.1 * self.weapon_rank))
+
+    def Rampaging_fury_heavy(self, weapon, target):
+        chance_to_miss = (1 - self.precision / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - ((self.strength * (1 + 0.2 * self.weapon_rank) + weapon.might) * 1.5 - target.defense)
+        if self.speed - weapon.weight * 0.33 - target.speed >= 5: 
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - ((self.strength * (1 + 0.2 * self.weapon_rank) + weapon.might) * 1.5 - target.defense)
+
+class Green_knight(Unit):
+
+    #heals self based on damage dealt
+    def Natures_sentinel(self, weapon, target):
+        chance_to_miss = (1 - self.precision / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.strength * (1 + 0.2 * self.weapon_rank) + weapon.might - target.defense)
+            self.hp = self.hp + (self.strength * (1 + 0.2 * self.weapon_rank) + weapon.might - target.defense) * 0.6
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.strength * (1 + 0.2 * self.weapon_rank) + weapon.might - target.defense)
+                self.hp = self.hp + (self.strength + weapon.might - target.defense) * 0.6
+        if self.hp > self.maxhp:
+            self.hp = self.maxhp
+
+    #deals bonus damage based on resistance
+    def Natures_wrath(self, weapon, target):
+        chance_to_miss = (1 - self.precision / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.strength * (1 + 0.2 * self.weapon_rank) + weapon.might + self.resistance * 0.45 - target.defense)
+        if self.speed - weapon.weight - target.speed >= 5: 
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.strength * (1 + 0.2 * self.weapon_rank) + weapon.might + self.resistance * 0.45 - target.defense)
+
+class Champion(Unit):
+
+    #bonus to damage, speed and accuracy, larger bonus near full health
+    def Cocky_duelist_quick(self, weapon, target):
+        cockiness = (1 + 0.25 * (self.hp / self.maxhp))
+        chance_to_miss = (1 - (self.precision + self.speed * 0.025 * self.weapon_rank) * cockiness / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.strength * cockiness + weapon.might - target.defense)
+        if self.speed * cockiness - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.strength * cockiness + weapon.might - target.defense)
+
+    def Cocky_duelist_polearm(self, weapon, target):
+        cockiness = (1 + 0.25 * (self.hp / self.maxhp))
+        chance_to_miss = (1 - self.precision * cockiness/ target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.strength * cockiness + weapon.might - target.defense * (1 - 0.1 * self.weapon_rank))
+        if self.speed * cockiness - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.strength * cockiness + weapon.might - target.defense * (1 - 0.1 * self.weapon_rank))
+
+class Tempest(Unit):
+
+    def Piercing_strike(self, weapon, target):
+        chance_to_miss = (1 - self.precision / target.evasion ) * 100
+        if randint (1, 100) >= chance_to_miss:
+            target.hp = target.hp - (self.strength + weapon.might - target.defense * (0.7 - 0.1 * self.weapon_rank))
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1, 100) >= chance_to_miss:
+                target.hp = target.hp - (self.strength + weapon.might - target.defense * (0.7 - 0.1 * self.weapon_rank))
+
+    def Pierce_the_heavens(self, weapon, target):
+        chance_to_miss = (1 - self.precision / target.evasion ) * 100
+        if randint (1, 100) >= chance_to_miss:
+            target.hp = target.hp - (self.strength + weapon.might - target.defense * (0.4 - 0.1 * self.weapon_rank))
+            self.hp = self.hp - 5
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1, 100) >= chance_to_miss:
+                target.hp = target.hp - (self.strength + weapon.might - target.defense * (0.4 - 0.1 * self.weapon_rank))
+                self.hp = self.hp - 5
+
+class Sniper(Unit):
+
+    def Careful_shot(self, weapon, target):
+        chance_to_miss = (1 - self.precision * 1.3 / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.strength * 0.75 + weapon.might - target.defense)
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.strength * 0.75 + weapon.might - target.defense)
+
+    def Reaper(self, weapon, target):
+        chance_to_miss = (1 - self.precision * 0.85/ target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.strength + self.precision * 0.2 + weapon.might - target.defense)
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.strength + self.precision * 0.2 + weapon.might - target.defense)
+
+class Destroyer(Unit):
+
+    def Inescapable_doom_range(self, weapon, target):
+        chance_to_miss = (1 - self.precision + self.strength * 0.3 / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.strength + weapon.might - target.defense)
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.strength + weapon.might - target.defense)
+
+    def Inescapable_doom_heavy(self, weapon, target):
+        chance_to_miss = (1 - self.precision + self.strength * 0.3 / target.evasion ) * 100
+        if randint (1, 100) >= chance_to_miss:
+            target.hp = target.hp - (self.strength * (1 + 0.2 * self.weapon_rank) + weapon.might - target.defense)
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1, 100) >= chance_to_miss:
+                target.hp = target.hp - (self.strength * (1 + 0.2 * self.weapon_rank) + weapon.might - target.defense)
+
+#magical
+class Retributionist(Unit):
+
+    def Guided_strike_elemental(self, weapon, target):
+        chance_to_miss = (1 - self.precision + self.magic * 0.2 / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.magic * (1 + 0.2 * self.weapon_rank) + weapon.might - target.resistance)
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.magic * (1 + 0.2 * self.weapon_rank) + weapon.might - target.resistance)
+
+    def Guided_strike_divine(self, weapon, target):
+        chance_to_miss = (1 - self.precision + self.magic * 0.2 / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.magic + weapon.might - target.resistance * (1 - 0.1 * self.weapon_rank))
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.magic + weapon.might - target.resistance * (1 - 0.1 * self.weapon_rank))
+
+class Cleric(Unit):
+
+    def Divine_punishment(self, weapon, target):
+        chance_to_miss = (1 - self.precision / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.magic + self.defense * 0.1 + self.resistance * 0.1 + weapon.might - target.resistance * (1 - 0.1 * self.weapon_rank))
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.magic + self.defense * 0.1 + self.resistance * 0.1 + weapon.might - target.resistance * (1 - 0.1 * self.weapon_rank))
+
+    def Sacred_flame(self, weapon, target):
+        target.hp = target.hp + (self.magic + self.defense * 0.1 + self.resistance * 0.1 + weapon.might) * (0.5 + 0.1 * self.weapon_rank)
+
+class Necromancer(Unit):
+
+    def Corrupted_recovery(self, weapon, target):
+        target.hp = target.hp + ((randint(-20, 200)) / 100) * ((self.magic + weapon.might) * (0.5 + 0.1 * self.weapon_rank))
+
+    def Dominating_presence(self, weapon, target):
+        ego = (1 + 0.25 * self.hp/self.maxhp)
+        chance_to_miss = (1 - self.precision / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.magic + weapon.might - target.resistance)
+            self.hp = self.hp + (self.magic + weapon.might - target.resistance) * (0.08 * self.weapon_rank)
+        if self.speed * ego - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.magic + weapon.might - target.resistance)
+                self.hp = self.hp + (self.magic + weapon.might - target.resistance) * (0.08 * self.weapon_rank)
+        if self.hp > self.maxhp:
+            self.hp = self.maxhp
+
+class Vestal(Unit):
+
+    def Divine_sacrifice(self, weapon, target):
+        target.hp = target.hp + (self.magic + weapon.might) * (2.5 + 0.1 * self.weapon_rank)
+        self.hp = self.hp - 20
+
+    def Healing_word(self, weapon, target):
+        target.hp = target.hp + (self.magic + weapon.might) * (1 + 0.1 * self.weapon_rank)
+
+class Sorcerer(Unit):
+
+    def Cataclysm(self, weapon, target):
+        chance_to_miss = (1 - self.precision / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.magic * (2 + 0.2 * self.weapon_rank) + weapon.might - target.resistance)
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.magic * (2 + 0.2 * self.weapon_rank) + weapon.might - target.resistance)
+        self.hp = self.hp - 30
+
+    def Mana_storm(self, weapon, target):
+        chance_to_miss = (1 - self.precision / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.magic * (1 + 0.2 * self.weapon_rank) + weapon.might - target.resistance)
+        if self.speed + self.magic * 0.25 - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.magic * (1 + 0.2 * self.weapon_rank) + weapon.might - target.resistance)
+
+class Bishop(Unit):
+
+    def Holy_judgement(self, weapon, target):
+        chance_to_miss = (1 - (self.precision + self.magic * 0.75) / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.magic * 1.3 + weapon.might - target.resistance * (1 - 0.1 * self.weapon_rank))
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.magic * 1.3 + weapon.might - target.resistance * (1 - 0.1 * self.weapon_rank))
+        self.hp = self.hp - 8
+
+    def Energy_flux(self, weapon, target):
+        chance_to_miss = (1 - self.precision / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.magic + weapon.might - target.resistance * (1 - 0.1 * self.weapon_rank))
+            self.hp = self.hp + (self.magic + weapon.might - target.resistance * (1 - 0.1 * self.weapon_rank)) * 0.35
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.magic + weapon.might - target.resistance * (1 - 0.1 * self.weapon_rank))
+                self.hp = self.hp + (self.magic + weapon.might - target.resistance * (1 - 0.1 * self.weapon_rank)) * 0.35
+        if self.hp > self.maxhp:
+            self.hp = self.maxhp
+
+class Occultist(Unit):
+
+    def Dark_judgement(self, weapon, target):
+        chance_to_miss = (1 - (self.precision + self.magic * 0.75) / target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.magic * 1.3 + weapon.might - target.resistance)
+            self.hp = self.hp + (self.magic + weapon.might - target.resistance) * (0.08 * self.weapon_rank)
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.magic * 1.3 + weapon.might - target.resistance)
+                self.hp = self.hp + (self.magic + weapon.might - target.resistance) * (0.08 * self.weapon_rank)
+        self.hp = self.hp - 8
+        if self.hp > self.maxhp:
+            self.hp = self.maxhp
+
+    def Inescapable_darkness(self, weapon, target):
+        chance_to_miss = (1 - self.precision / target.evasion ) * 100
+        if randint (1, 100) >= chance_to_miss:
+            target.hp = target.hp - (self.magic + weapon.might - target.resistance * 0.7)
+            self.hp = self.hp + (self.magic + weapon.might - target.resistance * 0.7) * (0.08 * self.weapon_rank)
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1, 100) >= chance_to_miss:
+                target.hp = target.hp - (self.magic + weapon.might - target.resistance * 0.7)
+                self.hp = self.hp + (self.magic + weapon.might - target.resistance * 0.7) * (0.08 * self.weapon_rank)
+        if self.hp > self.maxhp:
+            self.hp = self.maxhp
+
+class Torrent(Unit):
+
+    def Unstoppable_mana_rush_elemental(self, weapon, target):
+        chance_to_miss = (1 - (self.precision + 0.2 * self.speed)/ target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.magic * (1 + 0.2 * self.weapon_rank + 0.2 * self.speed) + weapon.might - target.resistance)
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.magic * (1 + 0.2 * self.weapon_rank + 0.2 * self.speed) + weapon.might - target.resistance)
+
+    def Unstoppable_mana_rush_dark(self, weapon, target):
+        chance_to_miss = (1 - (self.precision + 0.2 * self.speed)/ target.evasion ) * 100
+        if randint (1,100) >= chance_to_miss:
+            target.hp = target.hp - (self.magic * (1 + 0.2 * self.weapon_rank + 0.2 * self.speed) + weapon.might - target.resistance)
+            self.hp = self.hp + (self.magic * (1 + 0.2 * self.weapon_rank + 0.2 * self.speed) + weapon.might - target.resistance) * (0.08 * self.weapon_rank)
+        if self.speed - weapon.weight - target.speed >= 5:
+            if randint (1,100) >= chance_to_miss:
+                target.hp = target.hp - (self.magic * (1 + 0.2 * self.weapon_rank + 0.2 * self.speed) + weapon.might - target.resistance)
+                self.hp = self.hp + (self.magic * (1 + 0.2 * self.weapon_rank + 0.2 * self.speed) + weapon.might - target.resistance) * (0.08 * self.weapon_rank)
+        if self.hp > self.maxhp:
+            self.hp = self.maxhp
+
+
+#weapons
+class Weapon:
+    might = 0
+    weight = 0
+    def __init__(self, might, weight):
+        self.might = might
+        self.weight = weight
+
+battleaxe = Weapon(5, 3)
+
+flames = Weapon(2, 1)
+
+
+#test units & battles
+Dummy = Unit(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+God = Green_knight(25, 30, 30, 30, 30, 30, 70, 30 ,30, 0, 0, 0, 0, 0, 0, 0, 0)
+
+#actual units
+Grumnir = Heavy(1, 4, 0, 0, 4, 1, 4, 4, 4, 60, 0, 0, 90, 60, 90, 95, 95)
+
+Kane = Quick(12, 12, 0, 16, 8, 4, 15, 3, 1, 20, 0, 25, 10, 0, 40, 20, 10)
+
+Lyra = Range(5, 5, 0, 3, 6, 24, 16, 4, 4, 50, 0, 45, 40, 95, 95, 40, 35)
+
+Kate = Elemental(1, 0, 3, 2, 2, 2, 4, 0, 0, 0, 95, 95, 95, 50, 80, 40, 35)
+
+Douglas = Dark(9, 0, 4, 1, 6, 20, 20, 0, 0, 0, 45, 0, 50, 95, 95, 0, 0)
+
+Catherine = Divine(5, 0, 4, 6, 6, 3, 3, 0, 0, 0, 40, 70, 70, 30, 30, 50, 50)
+
+#game running stuff
+floor_count = 1
+foe_stats = floor_count + 2
+
+#enemies
+foe1 = Heavy(1, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, 0, 0, 0, 0, 0, 0, 0, 0)
+foe2 = Quick(1, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, 0, 0, 0, 0, 0, 0, 0, 0)
+foe3 = Polearm(1, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, 0, 0, 0, 0, 0, 0, 0, 0)
+foe4 = Divine(1, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, 0, 0, 0, 0, 0, 0, 0, 0)
+foe5 = Dark(1, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, 0, 0, 0, 0, 0, 0, 0, 0)
+foe6 = Elemental(1, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, 0, 0, 0, 0, 0, 0, 0, 0)
+
+target = foe6
+
+foe_target_reroll = True
+
+def foe_target_selection():
+    global foe_target_reroll
+    while foe_target_reroll == True:
+        x = randint(1, 6)
+        if x == 1:
+            if Grumnir.hp > 0:
+                return Grumnir
+                foe_target_reroll = False
+        elif x == 2:
+            if Kane.hp > 0:
+                return Kane
+                foe_target_reroll = False
+        elif x == 3:
+            if Lyra.hp > 0:
+                return Lyra
+                foe_target_reroll = False
+        elif x == 4:
+            if Kate.hp > 0:
+                return Kate
+                foe_target_reroll = False
+        elif x == 5:
+            if Douglas.hp > 0:
+                return Douglas
+                foe_target_reroll = False
+        elif x == 6:
+            if Catherine.hp > 0:
+                return Catherine
+                foe_target_reroll = False
+
+def foe1_attack():
+    foe1.Heavy_attack(flames, foe_target_selection())
+
+def foe2_attack():
+    foe2.Quick_attack(flames, foe_target_selection())
+
+def foe3_attack():
+    foe3.Polearm_attack(flames, foe_target_selection())
+
+def foe4_attack():
+    foe4.Divine_attack(flames, foe_target_selection())
+
+def foe5_attack():
+    foe5.Dark_attack(flames, foe_target_selection())
+
+def foe6_attack():
+    foe6.Elemental_attack(flames, foe_target_selection())
+
+def player_target_selection():
+    ok = input()
+    if ok == "1":
+        return foe1
+    elif ok == "2":
+        return foe2
+    elif ok == "3":
+        return foe3
+    elif ok == "4":
+        return foe4
+    elif ok == "5":
+        return foe5
+    elif ok == "6":
+        return foe6 
+
+def Grumnir_attack():
+    Grumnir.Heavy_attack(battleaxe, player_target_selection())
+
+def Kane_attack():
+    Kane.Quick_attack(battleaxe, player_target_selection())
+
+def Lyra_attack():
+    Lyra.Range_attack(battleaxe, player_target_selection())
+
+def Kate_attack():
+    Kate.Elemental_attack(battleaxe, player_target_selection())
+
+def Douglas_attack():
+    Douglas.Dark_attack(battleaxe, player_target_selection())
+
+def Catherine_attack():
+    Catherine.Divine_attack(battleaxe, player_target_selection())
+
+def display_foe_hp():
+    print ("foe1 hp, maxhp", foe1.hp, foe1.maxhp)
+    print ("foe2 hp, maxhp", foe2.hp, foe2.maxhp)
+    print ("foe3 hp, maxhp", foe3.hp, foe3.maxhp)
+    print ("foe4 hp, maxhp", foe4.hp, foe4.maxhp)
+    print ("foe5 hp, maxhp", foe5.hp, foe5.maxhp)
+    print ("foe6 hp, maxhp", foe6.hp, foe6.maxhp)
+    print ("-----------------------")
+    print ("-----------------------")
+
+def display_player_hp():
+    print ("Grumnir hp, maxhp", Grumnir.hp, Grumnir.maxhp)
+    print ("Kane hp, maxhp", Kane.hp, Kane.maxhp)
+    print ("Lyra hp, maxhp", Lyra.hp, Lyra.maxhp)
+    print ("Kate hp, maxhp", Kate.hp, Kate.maxhp)
+    print ("Douglas hp, maxhp", Douglas.hp, Douglas.maxhp)
+    print ("Catherine hp, maxhp", Catherine.hp, Catherine.maxhp)
+    print ("-----------------------")
+    print ("-----------------------")
+
+
+
+#running the game
+game_on = True
+
+while game_on:
+    print ("hello, continue or quit?")
+    user = input()
+    if user == "quit":
+        game_on = False
+    else:
+
+        #player's turn
+
+        display_player_hp()
+
+        if Grumnir.hp > 0:
+            display_foe_hp()
+            print ("select a target for Grumnir")
+            Grumnir_attack()
+        else:
+            print ("Grumnir has been defeated!")
+
+              
+        if Kane.hp > 0:
+            display_foe_hp()
+            print ("select a target for Kane")  
+            Kane_attack()
+        else:
+            print ("Kane has been defeated!")
+
+        
+        if Lyra.hp > 0:
+            display_foe_hp()
+            print ("select a target for Lyra")
+            Lyra_attack()
+        else:
+            print ("Lyra has been defeated!")
+
+              
+        if Kate.hp > 0:
+            display_foe_hp()
+            print ("select a target for Kate")  
+            Kate_attack()
+        else:
+            print ("Kate has been defeated!")
+        
+        
+        if Douglas.hp > 0:
+            display_foe_hp()
+            print ("select a target for Douglas")
+            Douglas_attack()
+        else:
+            print ("Douglas has been defeated!")
+
+               
+        if Catherine.hp > 0:
+            display_foe_hp()
+            print ("select a target for Catherine") 
+            Catherine_attack()
+        else:
+            print ("Catherine has been defeated!")
+        
+
+        #foe's turn
+        if foe1.hp > 0:
+            foe1_attack()
+        else:
+            print ("foe1 has been defeated!")
+
+        if foe2.hp > 0:
+            foe2_attack()
+        else:
+            print ("foe2 has been defeated!")
+
+        if foe3.hp > 0:
+            foe3_attack()
+        else:
+            print ("foe3 has been defeated!")
+        
+        if foe4.hp > 0:
+            foe4_attack()
+        else:
+            print ("foe4 has been defeated!")
+
+        if foe5.hp > 0:
+            foe5_attack()
+        else:
+            print ("foe5 has been defeated!")
+
+        if foe6.hp > 0:
+            foe6_attack()
+        else:
+            print ("foe5 has been defeated!")
+        
+        print ("-----------------------")
+        print ("Next turn!")
+        print ("-----------------------")
+        
+        if Grumnir.hp <= 0 and Kane.hp <= 0 and Lyra.hp <= 0 and Kate.hp <= 0 and Douglas.hp <= 0 and Catherine.hp <= 0:
+            game_on = False
+        
+        if foe1.hp <= 0 and foe2.hp <= 0 and foe3.hp <= 0 and foe4.hp <= 0 and foe5.hp <= 0 and foe6.hp <= 0:
+            print ("You have cleared floor " , floor_count)
+
+            floor_count += 1
+
+            print ("You are now on floor " , floor_count)
+
+            foe_stats = floor_count + 2
+
+            foe1 = Heavy(1, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, 0, 0, 0, 0, 0, 0, 0, 0)
+            foe2 = Quick(1, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, 0, 0, 0, 0, 0, 0, 0, 0)
+            foe3 = Polearm(1, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, 0, 0, 0, 0, 0, 0, 0, 0)
+            foe4 = Divine(1, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, 0, 0, 0, 0, 0, 0, 0, 0)
+            foe5 = Dark(1, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, 0, 0, 0, 0, 0, 0, 0, 0)
+            foe6 = Elemental(1, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, foe_stats, 0, 0, 0, 0, 0, 0, 0, 0)
+
+            #level up
+
+            Grumnir.level_up()
+            Kane.level_up()
+            Lyra.level_up()
+            Kate.level_up()
+            Douglas.level_up()
+            Catherine.level_up()
+
+            Grumnir.hp = Grumnir.maxhp
+            Kane.hp = Kane.maxhp
+            Lyra.hp = Lyra.maxhp
+            Kate.hp = Kate.maxhp
+            Douglas.hp = Douglas.maxhp
+            Catherine.hp = Catherine.maxhp
+
+
+print ("You have been slain!")
