@@ -3,6 +3,12 @@
 The end goal is to make it easy to add more puzzles
 
 '''
+user_x = 1
+user_y = 1
+mx = 100
+my = 100
+new_number = 0
+
 import math
 
 import pygame
@@ -44,6 +50,16 @@ row7 = [0, 7, 3, 0, 0, 6, 0, 0, 0, 0, 0]
 row8 = [0, 0, 0, 1, 2, 0, 7, 0, 0, 0, 0]
 row9 = [0, 0, 6, 9, 5, 0, 0, 4, 0, 7, 0]
 
+#user inputed numbers
+user_row1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+user_row2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+user_row3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+user_row4 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+user_row5 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+user_row6 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+user_row7 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+user_row8 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+user_row9 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 #17, 65 should be the starting point of box 1,1
 
@@ -77,6 +93,20 @@ def display_numbers():
 
         box_index += 1
 
+def display_user_numbers():
+    box_index = 11
+    while box_index <= 99:
+        horizontal_index = box_index % 10
+        vertical_index = math.floor(box_index / 10)
+
+        internal_index = "user_row" + str(vertical_index) + "[" + str(horizontal_index) + "]"
+
+        if eval(internal_index) != 0:
+            number = font.render(str(eval(internal_index)), True, (0, 0, 0))
+            box_print = screen.blit(number, (-33 + 50 * horizontal_index, 15 + 50 * vertical_index))    
+
+        box_index += 1
+
 def user_selection():
     user_x = math.ceil(mx / 50)
     user_y = math.ceil((my - 50) / 50)
@@ -85,6 +115,25 @@ def user_selection():
 
     if eval(internal_index) == 0:
         print ("blank spot")
+        user_answering()
+
+def user_answering():
+    selecting = True
+
+    while selecting:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    global new_number
+                    new_number = 1
+                    selecting = False
+    
+def updating_numbers():
+    user_x = math.ceil(mx / 50)
+    user_y = math.ceil((my - 50)/ 50)
+
+    update = "user_row" + str(user_y) + "[" + str(user_x) + "] = " + str(new_number)
+    exec(update)
 
 def main_menu():
     title = font.render('''Sudoku!''' , True, (0, 0, 0))
@@ -99,6 +148,8 @@ while running:
     horizontal_gridline()
     main_menu()
     display_numbers()
+    display_user_numbers()
+    updating_numbers()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -108,8 +159,10 @@ while running:
             mx, my = pygame.mouse.get_pos()
 
             print (mx, my)
+            if my > 50:
+                user_selection()
 
-            user_selection()
+
 
 
     pygame.display.update()
