@@ -3,6 +3,7 @@ user_y = 1
 mx = 100
 my = 100
 new_number = 0
+gap = False
 
 import math
 
@@ -198,9 +199,9 @@ def updating_numbers():
         exec(update)
         should_update_number = False
 
-def title_in_game():
-    title = font.render('''Sudoku!''' , True, (0, 0, 0))
-    screen.blit(title, (165, 10))
+def check_answer_text():
+    check = font.render('''Check answer''' , True, (0, 0, 0))
+    screen.blit(check, (230, 10))
 
 def checking_solution():
     if user_row1 == answer_row1 and user_row2 == answer_row2 and user_row3 == answer_row3 and user_row4 == answer_row4\
@@ -209,7 +210,6 @@ def checking_solution():
             return 1
     else:
         return 0
-
 
 
 #big functions
@@ -226,19 +226,24 @@ def main_menu():
     credit = font.render('''Made by Josh Zhang''' , True, (0, 0, 0))
     screen.blit(credit, (67, 354))
 
-    if mx > 165 and mx < 286 and my > 232 and my < 275:
-        title_screen = False
-        game_selection = True
 
 def game_on():
+    global game_selection
+    global actual_game
+
     vertical_gridline()
     horizontal_gridline()
     bold_vertical_gridline()
     bold_horizontal_gridline()
-    title_in_game()
+    check_answer_text()
     display_numbers()
     display_user_numbers()
     updating_numbers()
+    
+    #back button
+    back = font.render("Back" , True, (0, 0, 0))
+    screen.blit(back, (10, 10))
+
 
 def game_selector():
     global title_screen
@@ -250,17 +255,7 @@ def game_selector():
 
     game_1 = big_font.render("1" , True, (0, 0, 0))
     screen.blit(game_1 , (20, 20))
-
-    #back button
-    if mx > 16 and mx < 102 and my > 445 and my < 481:
-        game_selection = False
-        title_screen = True
-
-    #stage selection
-    if mx > 14 and mx < 52 and my > 20 and my < 66:
-        game_selection = False
-        actual_game = True
-
+    
 
 complete = big_font.render("Complete" , True, (0, 0, 0))
 not_quite = big_font.render("Not quite..." , True, (0, 0, 0))
@@ -297,33 +292,58 @@ while running:
         elif checking_solution() == 0:
             screen.blit(not_quite, (200, 200))
 
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        
+
         if event.type == pygame.MOUSEBUTTONDOWN:
             mx, my = pygame.mouse.get_pos()
 
             print (mx, my)
+            gap = False
 
-            check_answer_gap = False
-            if display_status == True:
-                print ("come on")
+            #display status
+            if display_status == True and gap == False:
                 display_status = False
                 actual_game = True
-                check_answer_gap = True
-            
-            pygame.display.update()
+                gap = True
 
-            if actual_game == True and display_status == False:
+            #actual game
+            if actual_game == True and display_status == False and gap == False:
                 if my > 50:
-                    print ("damn")
                     user_selection()
+                    gap = True
 
-                if my < 50 and mx > 300 and check_answer_gap == False:
+                if my < 50 and mx > 225:
                     check_answer()
-            
+                    gap = True
 
+            if actual_game == True and mx < 86 and my < 39 and gap == False:
+                game_selection = True
+                actual_game = False
+                gap = True
+
+            #title screen
+            if title_screen == True and gap == False and mx > 165 and mx < 286 and my > 232 and my < 275:
+                title_screen = False
+                game_selection = True
+                gap = True
+
+            #game selection
+            if game_selection == True and gap == False:
+                
+                #back button
+                if mx > 16 and mx < 102 and my > 445 and my < 481:
+                    game_selection = False
+                    title_screen = True
+                    gap = True
+
+                #stage selection
+                if mx > 14 and mx < 52 and my > 20 and my < 66:
+                    game_selection = False
+                    actual_game = True
+                    gap = True
 
 
     pygame.display.update()
