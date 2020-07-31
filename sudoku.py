@@ -1,3 +1,9 @@
+'''
+align all text in status check
+reset option
+highlight selected tile
+mutliple puzzles
+'''
 user_x = 1
 user_y = 1
 mx = 100
@@ -54,6 +60,9 @@ def bold_horizontal_gridline():
 font = pygame.font.Font('freesansbold.ttf', 30)
 big_font = pygame.font.Font('freesansbold.ttf', 50)
 huge_font = pygame.font.Font('freesansbold.ttf', 80)
+
+#blank row
+blank_row = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 #the numbers
 row1 = [0, 5, 0, 3, 0, 0, 6, 8, 4, 0, 0]
@@ -125,6 +134,11 @@ def display_user_numbers():
 
         box_index += 1
 
+highlight = pygame.Surface((50, 50))
+highlight.fill((0, 0, 255))
+def selecting_position():
+    screen.blit(highlight, (50 * math.floor(mx / 50), 50 * math.floor(my / 50)))
+
 def user_selection():
     user_x = math.ceil(mx / 50)
     user_y = math.ceil((my - 50) / 50)
@@ -139,6 +153,9 @@ should_update_number = False
 def user_answering():
     selecting = True
     while selecting:
+        selecting_position()
+        pygame.display.update()
+
         global new_number
         global should_update_number
         for event in pygame.event.get():
@@ -211,6 +228,10 @@ def checking_solution():
     else:
         return 0
 
+def reset_button():
+    reset = font.render('''Reset''' , True, (0, 0, 0))
+    screen.blit(reset, (115, 10))
+
 
 #big functions
 def main_menu():
@@ -239,6 +260,7 @@ def game_on():
     display_numbers()
     display_user_numbers()
     updating_numbers()
+    reset_button()
     
     #back button
     back = font.render("Back" , True, (0, 0, 0))
@@ -288,10 +310,9 @@ while running:
     
     if display_status == True:
         if checking_solution() == 1:
-            screen.blit(complete, (200, 200))
+            screen.blit(complete, (106, 205))
         elif checking_solution() == 0:
-            screen.blit(not_quite, (200, 200))
-
+            screen.blit(not_quite, (106, 205))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -302,6 +323,7 @@ while running:
 
             print (mx, my)
             gap = False
+            
 
             #display status
             if display_status == True and gap == False:
@@ -323,6 +345,21 @@ while running:
                 game_selection = True
                 actual_game = False
                 gap = True
+            
+            if actual_game == True and mx > 112 and mx < 203 and my > 11 and my < 40:
+                print ("wipe")
+                user_row1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                user_row2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                user_row3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                user_row4 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                user_row5 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                user_row6 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                user_row7 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                user_row8 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                user_row9 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                gap = True
+                pygame.display.update()
+                
 
             #title screen
             if title_screen == True and gap == False and mx > 165 and mx < 286 and my > 232 and my < 275:
@@ -339,7 +376,7 @@ while running:
                     title_screen = True
                     gap = True
 
-                #stage selection
+                #stage 1 selection
                 if mx > 14 and mx < 52 and my > 20 and my < 66:
                     game_selection = False
                     actual_game = True
