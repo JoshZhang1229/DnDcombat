@@ -24,17 +24,35 @@ def vertical_gridline():
     vertical_line_count = 0
     vertical_line_x_axis = 50
     while vertical_line_count < 8:
-        pygame.draw.line(screen, (0, 0, 0), (vertical_line_x_axis, 50), (vertical_line_x_axis, 500)) 
+        if vertical_line_x_axis != 150 and vertical_line_x_axis != 300:
+            pygame.draw.line(screen, (0, 0, 0), (vertical_line_x_axis, 50), (vertical_line_x_axis, 500)) 
         vertical_line_count += 1
         vertical_line_x_axis += 50
 
+def bold_vertical_gridline():
+    bold_vertical_line_count = 0
+    bold_vertical_line_x_axis = 150
+    while bold_vertical_line_count < 2:
+        pygame.draw.line(screen, (0, 0, 255), (bold_vertical_line_x_axis, 50), (bold_vertical_line_x_axis, 500)) 
+        bold_vertical_line_count += 1
+        bold_vertical_line_x_axis += 150
+
 def horizontal_gridline():
     horizontal_line_count = 0
-    horizontal_line_x_axis = 50
+    horizontal_line_y_axis = 50
     while horizontal_line_count < 9:
-        pygame.draw.line(screen, (0, 0, 0), (0, horizontal_line_x_axis), (450, horizontal_line_x_axis)) 
+        if horizontal_line_y_axis != 200 and horizontal_line_y_axis != 350:
+            pygame.draw.line(screen, (0, 0, 0), (0, horizontal_line_y_axis), (450, horizontal_line_y_axis)) 
         horizontal_line_count += 1
-        horizontal_line_x_axis += 50
+        horizontal_line_y_axis += 50
+
+def bold_horizontal_gridline():
+    bold_horizontal_line_count = 0
+    bold_horizontal_line_y_axis = 200
+    while bold_horizontal_line_count < 2:
+        pygame.draw.line(screen, (0, 0, 255), (0, bold_horizontal_line_y_axis), (450, bold_horizontal_line_y_axis)) 
+        bold_horizontal_line_count += 1
+        bold_horizontal_line_y_axis += 150
 
 #font
 font = pygame.font.Font('freesansbold.ttf', 30)
@@ -146,6 +164,10 @@ def user_answering():
                     new_number = 9
                     selecting = False
                     should_update_number = True
+                elif event.key == pygame.K_0:
+                    new_number = 0
+                    selecting = False
+                    should_update_number = True
                 elif event.key == pygame.K_ESCAPE:
                     selecting = False
                 elif event.key == pygame.K_SPACE:
@@ -169,10 +191,12 @@ def main_menu():
 running = True
 while running:
 
-    screen.fill((252,169,3))
+    screen.fill((252, 169, 3)) #252, 169, 3
 
     vertical_gridline()
     horizontal_gridline()
+    bold_vertical_gridline()
+    bold_horizontal_gridline()
     main_menu()
     display_numbers()
     display_user_numbers()
