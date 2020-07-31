@@ -86,7 +86,7 @@ def display_user_numbers():
         internal_index = "user_row" + str(vertical_index) + "[" + str(horizontal_index) + "]"
 
         if eval(internal_index) != 0:
-            number = font.render(str(eval(internal_index)), True, (0, 0, 0))
+            number = font.render(str(eval(internal_index)), True, (255, 255, 255))
             box_print = screen.blit(number, (-33 + 50 * horizontal_index, 15 + 50 * vertical_index))    
 
         box_index += 1
@@ -113,37 +113,43 @@ def user_answering():
                 if event.key == pygame.K_1:
                     new_number = 1
                     selecting = False
+                    should_update_number = True
                 elif event.key == pygame.K_2:
                     new_number = 2
                     selecting = False
+                    should_update_number = True
                 elif event.key == pygame.K_3:
                     new_number = 3
                     selecting = False
+                    should_update_number = True
                 elif event.key == pygame.K_4:
                     new_number = 4
                     selecting = False
+                    should_update_number = True
                 elif event.key == pygame.K_5:
                     new_number = 5
                     selecting = False
+                    should_update_number = True
                 elif event.key == pygame.K_6:
                     new_number = 6
                     selecting = False
+                    should_update_number = True
                 elif event.key == pygame.K_7:
                     new_number = 7
                     selecting = False
+                    should_update_number = True
                 elif event.key == pygame.K_8:
                     new_number = 8
                     selecting = False
+                    should_update_number = True
                 elif event.key == pygame.K_9:
                     new_number = 9
                     selecting = False
+                    should_update_number = True
                 elif event.key == pygame.K_ESCAPE:
                     selecting = False
                 elif event.key == pygame.K_SPACE:
                     selecting = False
-    
-    if selecting == False:
-        should_update_number = True
 
 
 def updating_numbers():
