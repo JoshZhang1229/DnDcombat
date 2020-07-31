@@ -1,8 +1,6 @@
 '''
-align all text in status check
-reset option
-highlight selected tile
-mutliple puzzles
+2020/07/31
+DONE!
 '''
 user_x = 1
 user_y = 1
@@ -146,7 +144,7 @@ def user_selection():
     internal_index = "row" + str(user_y) + "[" + str(user_x) + "]"
 
     if eval(internal_index) == 0:
-        print ("blank spot")
+        #print ("blank spot")
         user_answering()
 
 should_update_number = False
@@ -212,7 +210,6 @@ def user_answering():
                     selecting = False
                 elif event.key == pygame.K_SPACE:
                     selecting = False
-
 
 
 def updating_numbers():
@@ -330,9 +327,9 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             mx, my = pygame.mouse.get_pos()
 
-            print (mx, my)
-            gap = False
+            #print (mx, my)
             
+            gap = False
 
             #display status
             if display_status == True and gap == False:
@@ -356,7 +353,7 @@ while running:
                 gap = True
             
             if actual_game == True and mx > 112 and mx < 203 and my > 11 and my < 40:
-                print ("wipe")
+                #print ("wipe")
                 user_row1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
                 user_row2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
                 user_row3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -430,6 +427,7 @@ while running:
                     actual_game = True
                     gap = True
 
+                #stage 2 selection
                 if mx > 72 and mx < 107 and my > 22 and my < 66:
                     #the numbers
                     row1 = [0, 0, 0, 9, 0, 8, 0, 5, 0, 0, 0]
