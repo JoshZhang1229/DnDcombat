@@ -11,12 +11,14 @@ random.seed(datetime.now())
 #player stats
 gold = 1000
 platnium = 0
-renown = 0
+renown = 300
 unit_exp = 0
 weapon_exp = 0
 
 week = 1
 season = 1
+
+renown_bonus = math.log((renown + 5), 5)
 
 #classes
 
@@ -227,15 +229,15 @@ class Quest:
 
         self.setup = seed * (week + season * 12)
 
-        self.renown_bonus = math.log((renown + 5), 5)
+        renown_bonus = math.log((renown + 5), 5)
 
-        self.gold_reward = self.renown_bonus * time * difficulty * \
+        self.gold_reward = renown_bonus * time * difficulty * \
             randint(800000 , (1200000 + self.setup)) * randint(800000 , (1200000 - self.setup)) / (1000000 * 1000000)
-        self.renown_reward = self.renown_bonus * time * difficulty * \
+        self.renown_reward = renown_bonus * time * difficulty * \
             randint(800000 , (1199999 + self.setup)) * randint(800000 , (1199999 - self.setup)) / (1000000 * 1000000)
-        self.unit_exp_reward = self.renown_bonus * time * difficulty * \
+        self.unit_exp_reward = renown_bonus * time * difficulty * \
             randint(800000 , (1199998 + self.setup)) * randint(800000 , (1199998 - self.setup)) / (1000000 * 1000000)
-        self.weapon_exp_reward = self.renown_bonus * time * difficulty * \
+        self.weapon_exp_reward = renown_bonus * time * difficulty * \
             randint(800000 , (1199997 + self.setup)) * randint(800000 , (1199997- self.setup)) / (1000000 * 1000000)
 
         self.CR = self.gold_reward + self.renown_reward + self.unit_exp_reward + self.weapon_exp_reward
@@ -250,12 +252,16 @@ class Quest:
 
         self.setup = seed * (week + season * 12)
 
-        self.renown_bonus = math.log((renown + 5), 5)
+        renown_bonus = math.log((renown + 5), 5)
 
-        self.gold_reward = self.renown_bonus * time * difficulty * \
+        self.gold_reward = renown_bonus * time * difficulty * \
             randint(800000 , (1200000 + self.setup)) * randint(800000 , (1200000 - self.setup)) / (1000000 * 1000000)
-        self.renown_reward = self.renown_bonus * time * difficulty * \
-            randint(800000 , (1199999 + self.setup)) * randint(800000 , (1199999 - self.setup)) / (999999 * 999999)
+        self.renown_reward = renown_bonus * time * difficulty * \
+            randint(800000 , (1199999 + self.setup)) * randint(800000 , (1199999 - self.setup)) / (1000000 * 1000000)
+        self.unit_exp_reward = renown_bonus * time * difficulty * \
+            randint(800000 , (1199998 + self.setup)) * randint(800000 , (1199998 - self.setup)) / (1000000 * 1000000)
+        self.weapon_exp_reward = renown_bonus * time * difficulty * \
+            randint(800000 , (1199997 + self.setup)) * randint(800000 , (1199997- self.setup)) / (1000000 * 1000000)
 
         self.CR = self.gold_reward + self.renown_reward + self.unit_exp_reward + self.weapon_exp_reward
 
@@ -352,8 +358,10 @@ def battle_6(A, B, C, D, E, F, enemy):
 #enemies
 # affinity, might, power, speed, precision, constitution, defense, reflex, evasion, resilience
 
-Zombies = Foe(5, 0, 2, 2, 2, 2, 2, 2, 2, 2)
-Soliders = Foe(4, 1, 3, 2, 2, 3, 3, 2, 2, 3)
+Zombies = Foe(5, 1 * renown_bonus, 2 * renown_bonus, 2 * renown_bonus, 2 * renown_bonus, 2 * renown_bonus,\
+    2 * renown_bonus, 2 * renown_bonus, 2 * renown_bonus, 2 * renown_bonus)
+Soliders = Foe(4, 1 * renown_bonus, 3 * renown_bonus, 2 * renown_bonus, 2 * renown_bonus, 3 * renown_bonus,\
+    3 * renown_bonus, 2 * renown_bonus, 2 * renown_bonus, 3 * renown_bonus)
 
 #weapons
 # might, shape, rank
@@ -439,34 +447,56 @@ def villagers_join():
 def villagers_background():
     print ("A common villager.")
 
-available_quest_list = [1 ,2, 3, 4]
+available_quest_list = [1,2]
 
 Quest_choice = 0
 def Pick_quest():
     global Quest_choice
     if not available_quest_list:
-        print ("There are no quests available right now.")
+        print ("There are no quests available right now")
 
     else:
-        print ("Pick your next quest")
+        selecting = True
+        while selecting:
+            print ("Pick your next quest")
 
-        print ("Quest 1" , "Gold:" , Quest1.gold_reward, "Renown:" , Quest1.renown_reward, \
-            "Unit exp:" , Quest1.unit_exp_reward, "Weapon exp:" , Quest1.weapon_exp_reward , "Overall challenge rating:" , Quest1.CR)
-        
-        text = input()
+            if 1 in available_quest_list:
+                print ("Quest 1" , "Gold:" , Quest1.gold_reward, "Renown:" , Quest1.renown_reward, \
+                    "Unit exp:" , Quest1.unit_exp_reward, "Weapon exp:" , Quest1.weapon_exp_reward , "Overall challenge rating:" , Quest1.CR)
+            if 2 in available_quest_list:
+                print ("Quest 2" , "Gold:" , Quest2.gold_reward, "Renown:" , Quest2.renown_reward, \
+                    "Unit exp:" , Quest2.unit_exp_reward, "Weapon exp:" , Quest2.weapon_exp_reward , "Overall challenge rating:" , Quest2.CR)
 
-        if text == "1":
-            Quest_choice = 1
+            text = input()
+
+            if text == "1":
+                Quest_choice = 1
+                selecting = False
+            elif text == "2":
+                Quest_choice = 2
+                selecting = False
+            
+            else:
+                print ("Invalid input, please try again")
 
 def Confirm_quest():
     if Quest_choice in available_quest_list:
+        
         if Quest_choice == 1:
+            available_quest_list.remove(1)
             if battle_6(Unit1, Unit2, Unit3, Unit4, Unit5, Unit6, Zombies) == 1:
                 print ("Quest complete!")
                 Quest1.victory
             elif battle_6(Unit1, Unit2, Unit3, Unit4, Unit5, Unit6, Zombies) == 0:
                 print ("Quest failed...")
-    
+        elif Quest_choice == 2:
+            available_quest_list.remove(2)
+            if battle_6(Unit1, Unit2, Unit3, Unit4, Unit5, Unit6, Soliders) == 1:
+                print ("Quest complete!")
+                Quest2.victory
+            elif battle_6(Unit1, Unit2, Unit3, Unit4, Unit5, Unit6, Soliders) == 0:
+                print ("Quest failed...")
+
     else:
         print("That quest isn't available, please select another.")
 
