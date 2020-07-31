@@ -62,23 +62,7 @@ user_row8 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 user_row9 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 #17, 65 should be the starting point of box 1,1
-
-
-
 #displaying the numbers
-'''
-def number_display_11():
-    box_index = 11
-    horizontal_index = box_index % 10
-    vertical_index = math.floor(box_index / 10)
-
-    internal_index = "row" + str(vertical_index) + "[" + str(horizontal_index) + "]"
-
-    number = font.render(str(eval(internal_index)), True, (0, 0, 0))
-    box_print = screen.blit(number, (-33 + 50 * horizontal_index, 15 + 50 * vertical_index))
-'''
-
-
 def display_numbers():
     box_index = 11
     while box_index <= 99:
@@ -117,23 +101,60 @@ def user_selection():
         print ("blank spot")
         user_answering()
 
+should_update_number = False
 def user_answering():
     selecting = True
 
     while selecting:
+        global new_number
+        global should_update_number
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
-                    global new_number
                     new_number = 1
                     selecting = False
+                elif event.key == pygame.K_2:
+                    new_number = 2
+                    selecting = False
+                elif event.key == pygame.K_3:
+                    new_number = 3
+                    selecting = False
+                elif event.key == pygame.K_4:
+                    new_number = 4
+                    selecting = False
+                elif event.key == pygame.K_5:
+                    new_number = 5
+                    selecting = False
+                elif event.key == pygame.K_6:
+                    new_number = 6
+                    selecting = False
+                elif event.key == pygame.K_7:
+                    new_number = 7
+                    selecting = False
+                elif event.key == pygame.K_8:
+                    new_number = 8
+                    selecting = False
+                elif event.key == pygame.K_9:
+                    new_number = 9
+                    selecting = False
+                elif event.key == pygame.K_ESCAPE:
+                    selecting = False
+                elif event.key == pygame.K_SPACE:
+                    selecting = False
     
-def updating_numbers():
-    user_x = math.ceil(mx / 50)
-    user_y = math.ceil((my - 50)/ 50)
+    if selecting == False:
+        should_update_number = True
 
-    update = "user_row" + str(user_y) + "[" + str(user_x) + "] = " + str(new_number)
-    exec(update)
+
+def updating_numbers():
+    global should_update_number
+    if should_update_number == True:
+        user_x = math.ceil(mx / 50)
+        user_y = math.ceil((my - 50)/ 50)
+
+        update = "user_row" + str(user_y) + "[" + str(user_x) + "] = " + str(new_number)
+        exec(update)
+        should_update_number = False
 
 def main_menu():
     title = font.render('''Sudoku!''' , True, (0, 0, 0))
@@ -161,8 +182,6 @@ while running:
             print (mx, my)
             if my > 50:
                 user_selection()
-
-
 
 
     pygame.display.update()
