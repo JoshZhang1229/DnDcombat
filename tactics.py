@@ -12,6 +12,8 @@ random.seed(datetime.now())
 gold = 1000
 platnium = 0
 renown = 0
+unit_exp = 0
+weapon_exp = 0
 
 week = 1
 season = 1
@@ -20,42 +22,74 @@ season = 1
 
 class Unit:
     def __init__(self, exp, affinity, blade_exp, polearm_exp, heavy_exp, range_exp, \
-        strength_base, strength_growth, speed_base, speed_growth, precision_base, precision_growth, \
+        elemental_exp, holy_exp, dark_exp, psychic_exp, \
+        power_base, power_growth, speed_base, speed_growth, precision_base, precision_growth, \
         constitution_base, constitution_growth, defense_base, defense_growth, reflex_base, reflex_growth, \
         evasion_base, evasion_growth, resilience_base, resilience_growth):
 
         self.affinity = affinity
+        self.exp = exp
 
-        self.level = math.floor(math.log2(exp + 2))
+        #character level
+        if self.exp < 100:
+            self.level = 0
+        else:
+            self.level = math.ceil(math.log2 (self.exp /100 + 0.00001))
 
         self.blade_exp = blade_exp
         self.polearm_exp = polearm_exp
         self.heavy_exp = heavy_exp
         self.range_exp = range_exp
+        self.elemental_exp = elemental_exp
+        self.holy_exp = holy_exp
+        self.dark_exp = dark_exp
+        self.psychic_exp = psychic_exp
 
 
-        if self.blade_exp < 1000:
-            self.blade_rank = 1
+        #weapon ranks
+        if self.blade_exp < 100:
+            self.blade_rank = 0
         else:
-            self.blade_rank = math.ceil(math.log2 (self.blade_exp / 1000))
+            self.blade_rank = math.ceil(math.log2 (self.blade_exp /100 + 0.00001))
 
-        if self.polearm_exp < 1000:
-            self.polearm_rank = 1
+        if self.polearm_exp < 100:
+            self.polearm_rank = 0
         else:
-            self.polearm_rank = math.ceil(math.log2 (self.polearm_exp / 1000))
+            self.polearm_rank = math.ceil(math.log2 (self.polearm_exp /100 + 0.00001))
 
-        if self.heavy_exp < 1000:
-            self.heavy_rank = 1
+        if self.heavy_exp < 100:
+            self.heavy_rank = 0
         else:
-            self.heavy_rank = math.ceil(math.log2 (self.heavy_exp / 1000))
+            self.heavy_rank = math.ceil(math.log2 (self.heavy_exp /100 + 0.00001))
 
-        if self.range_exp < 1000:
-            self.range_rank = 1
+        if self.range_exp < 100:
+            self.range_rank = 0
         else:
-            self.range_rank = math.ceil(math.log2 (self.range_exp / 1000))
+            self.range_rank = math.ceil(math.log2 (self.range_exp /100 + 0.00001))
+
+        if self.elemental_exp < 100:
+            self.elemental_rank = 0
+        else:
+            self.elemental_rank = math.ceil(math.log2 (self.elemental_exp /100 + 0.00001))
+
+        if self.holy_exp < 100:
+            self.holy_rank = 0
+        else:
+            self.holy_rank = math.ceil(math.log2 (self.holy_exp /100 + 0.00001))
+
+        if self.dark_exp < 100:
+            self.dark_rank = 0
+        else:
+            self.dark_rank = math.ceil(math.log2 (self.dark_exp /100 + 0.00001))
+
+        if self.psychic_exp < 100:
+            self.psychic_rank = 0
+        else:
+            self.psychic_rank = math.ceil(math.log2 (self.psychic_exp /100 + 0.00001))
 
 
-        self.strength = strength_base + self.level * strength_growth
+
+        self.power = power_base + self.level * power_growth
         self.speed = speed_base + self.level * speed_growth
         self.precision = precision_base + self.level * precision_growth
         self.constitution = constitution_base + self.level * constitution_growth
@@ -63,13 +97,50 @@ class Unit:
         self.reflex = reflex_base + self.level * reflex_growth
         self.evasion = evasion_base + self.level * evasion_growth
         self.resilience = resilience_base + self.level * resilience_growth
-    
-    def attack_power(self, weapon, target):
+
+        self.base_attack = 0
+
+    def weapon_equip(self, weapon):
+        self.base_attack = weapon.might
+
+        if weapon.shape == 1:
+            if self.blade_rank < weapon.rank:
+                self.base_attack = 0
+
+        if weapon.shape == 2:
+            if self.polearm_rank < weapon.rank:
+                self.base_attack = 0
+
+        if weapon.shape == 3:
+            if self.heavy_rank < weapon.rank:
+                self.base_attack = 0
+
+        if weapon.shape == 4:
+            if self.range_rank < weapon.rank:
+                self.base_attack = 0
+
+        if weapon.shape == 5:
+            if self.elemental_rank < weapon.rank:
+                self.base_attack = 0
+
+        if weapon.shape == 6:
+            if self.holy_rank < weapon.rank:
+                self.base_attack = 0
+
+        if weapon.shape == 7:
+            if self.dark_rank < weapon.rank:
+                self.base_attack = 0
+
+        if weapon.shape == 8:
+            if self.psychic_rank < weapon.rank:
+                self.base_attack = 0
+
+    def attack_power(self, target):
         total = 0
 
-        strength_bonus = 1
-        if self.strength > target.defense:
-            strength_bonus += 0.1 * (self.strength - target.defense)
+        power_bonus = 1
+        if self.power > target.defense:
+            power_bonus += 0.1 * (self.power - target.defense)
         
         speed_bonus = 1
         if self.speed > target.reflex:
@@ -83,7 +154,7 @@ class Unit:
         if self.constitution > target.resilience:
             constitution_bonus += 0.1 * (self.constitution - target.resilience)        
         
-        total = weapon.might * strength_bonus * speed_bonus * precision_bonus * constitution_bonus
+        total = self.base_attack * power_bonus * speed_bonus * precision_bonus * constitution_bonus
 
 
 
@@ -93,30 +164,11 @@ class Unit:
         if self.affinity == 1 and target.affinity == 6:
             total = total * 2
         
-
-        #checking to see if the unit has the weapon rank to weild the weapon
-        if weapon.shape == 1:
-            if self.blade_rank < weapon.rank:
-                total = 0
-
-        if weapon.shape == 2:
-            if self.polearm_rank < weapon.rank:
-                total = 0
-
-        if weapon.shape == 3:
-            if self.heavy_rank < weapon.rank:
-                total = 0
-
-        if weapon.shape == 4:
-            if self.range_rank < weapon.rank:
-                total = 0
-
-
         return total
 
 
 class Foe:
-    def __init__(self, affinity, might, strength, speed, precision, constitution, \
+    def __init__(self, affinity, might, power, speed, precision, constitution, \
         defense, reflex, evasion, resilience):
         pass
 
@@ -124,7 +176,7 @@ class Foe:
 
         self.might = might
 
-        self.strength = strength
+        self.power = power
         self.speed = speed
         self.precision = precision
         self.constitution = constitution
@@ -136,9 +188,9 @@ class Foe:
     def attack_power(self, target):
         total = 0
 
-        strength_bonus = 1
-        if self.strength > target.defense:
-            strength_bonus += 0.1 * (self.strength - target.defense)
+        power_bonus = 1
+        if self.power > target.defense:
+            power_bonus += 0.1 * (self.power - target.defense)
         speed_bonus = 1
         if self.speed > target.reflex:
             speed_bonus += 0.1 * (self.speed - target.reflex)       
@@ -149,7 +201,7 @@ class Foe:
         if self.constitution > target.resilience:
             constitution_bonus += 0.1 * (self.constitution - target.resilience)        
         
-        total = self.might * strength_bonus * speed_bonus * precision_bonus * constitution_bonus
+        total = self.might * power_bonus * speed_bonus * precision_bonus * constitution_bonus
 
         if self.affinity - target.affinity == 1:
             total = total * 2
@@ -180,9 +232,18 @@ class Quest:
         self.gold_reward = self.renown_bonus * time * difficulty * \
             randint(800000 , (1200000 + self.setup)) * randint(800000 , (1200000 - self.setup)) / (1000000 * 1000000)
         self.renown_reward = self.renown_bonus * time * difficulty * \
-            randint(800000 , (1199999 + self.setup)) * randint(800000 , (1199999 - self.setup)) / (999999 * 999999)
+            randint(800000 , (1199999 + self.setup)) * randint(800000 , (1199999 - self.setup)) / (1000000 * 1000000)
+        self.unit_exp_reward = self.renown_bonus * time * difficulty * \
+            randint(800000 , (1199998 + self.setup)) * randint(800000 , (1199998 - self.setup)) / (1000000 * 1000000)
+        self.weapon_exp_reward = self.renown_bonus * time * difficulty * \
+            randint(800000 , (1199997 + self.setup)) * randint(800000 , (1199997- self.setup)) / (1000000 * 1000000)
 
-        self.CR = self.gold_reward + self.renown_reward
+        self.CR = self.gold_reward + self.renown_reward + self.unit_exp_reward + self.weapon_exp_reward
+
+        self.gold_reward = self.gold_reward * 1000
+        self.renown_reward = self.renown_reward * 20
+        self.unit_exp_reward = self.unit_exp_reward * 100
+        self.weapon_exp_reward = self.weapon_exp_reward + 10
 
     def generate_new_quest():
         self.time = time
@@ -196,14 +257,23 @@ class Quest:
         self.renown_reward = self.renown_bonus * time * difficulty * \
             randint(800000 , (1199999 + self.setup)) * randint(800000 , (1199999 - self.setup)) / (999999 * 999999)
 
-        self.CR = self.gold_reward + self.renown_reward
+        self.CR = self.gold_reward + self.renown_reward + self.unit_exp_reward + self.weapon_exp_reward
+
+        self.gold_reward = self.gold_reward * 1000
+        self.renown_reward = self.renown_reward * 20
+        self.unit_exp_reward = self.unit_exp_reward * 100
+        self.weapon_exp_reward = self.weapon_exp_reward + 10
 
     def victory():
         global gold
         global renown
+        global unit_exp
+        global weapon_exp
 
-        gold += 1000 * self.gold_reward
-        renown += 20 * self.renown_reward
+        gold += self.gold_reward
+        renown += self.renown_reward
+        unit_exp += self.unit_exp_reward
+        weapon_exp += self.weapon_exp_reward
 
 #randint(800000 , (1200000 + self.setup)) * randint(800000 , (1200000 - self.setup)) / (1000000 * 1000000)
 #randint(800000 , (1199999 + self.setup)) * randint(800000 , (1199999 - self.setup)) / (999999 * 999999)
@@ -226,7 +296,7 @@ Quest13 = Quest(13, 4, 1)
 
 def battle_1(A, enemy):
     party_attack_power = 0
-    party_attack_power += A.attack_power(longsword, enemy)
+    party_attack_power += A.attack_power(enemy)
     
     enemy_attack_power = 0
     enemy_attack_power += enemy.attack_power(A)
@@ -239,10 +309,10 @@ def battle_1(A, enemy):
 
 def battle_4(A, B, C, D, enemy):
     party_attack_power = 0
-    party_attack_power += A.attack_power(longsword, enemy)
-    party_attack_power += B.attack_power(longsword, enemy)
-    party_attack_power += C.attack_power(longsword, enemy)
-    party_attack_power += D.attack_power(longsword, enemy)
+    party_attack_power += A.attack_power(enemy)
+    party_attack_power += B.attack_power(enemy)
+    party_attack_power += C.attack_power(enemy)
+    party_attack_power += D.attack_power(enemy)
     
     enemy_attack_power = 0
     enemy_attack_power += enemy.attack_power(A)
@@ -256,33 +326,85 @@ def battle_4(A, B, C, D, enemy):
     else:
         return 0
 
+def battle_6(A, B, C, D, E, F, enemy):
+    party_attack_power = 0
+    party_attack_power += A.attack_power(enemy)
+    party_attack_power += B.attack_power(enemy)
+    party_attack_power += C.attack_power(enemy)
+    party_attack_power += D.attack_power(enemy)
+    party_attack_power += E.attack_power(enemy)
+    party_attack_power += F.attack_power(enemy)
+
+    enemy_attack_power = 0
+    enemy_attack_power += enemy.attack_power(A)
+    enemy_attack_power += enemy.attack_power(B)
+    enemy_attack_power += enemy.attack_power(C)
+    enemy_attack_power += enemy.attack_power(D)
+    enemy_attack_power += enemy.attack_power(E)
+    enemy_attack_power += enemy.attack_power(F)
+
+    #return 1 for victory, 0 for defeat
+    if party_attack_power > enemy_attack_power:
+        return 1
+    else:
+        return 0
 
 #enemies
-Zombie = Foe(1, 3, 2, 2, 2, 2, 2, 2, 2, 2)
+# affinity, might, power, speed, precision, constitution, defense, reflex, evasion, resilience
+
+Zombies = Foe(5, 0, 2, 2, 2, 2, 2, 2, 2, 2)
+Soliders = Foe(4, 1, 3, 2, 2, 3, 3, 2, 2, 3)
 
 #weapons
-longsword = Weapon(5, 1, 2)
+# might, shape, rank
+broken_sword = Weapon(1, 1, 1)
+broken_spear = Weapon(1, 2, 1)
+broken_axe = Weapon(1, 3, 1)
+broken_bow = Weapon(1, 4, 1)
 
 #characters
-dude = Unit(50, 5, 5000, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5)
+'''
+(exp, affinity, \
+blade exp, polearm exp, heavy exp, range exp, \
+elemental exp, holy exp, dark exp, psychic exp, \
+power base, power growth, speed base, speed growth, precision base, precision growth, constitution base, constitution growth, \
+defense base, defense growth, reflex base, reflex growth, evasion base, evasion growth, resilience base, resilience growth)
+'''
+Douglas = Unit(1000, 4, \
+    0, 200, 0, 0, \
+    0, 0, 0, 0, \
+    12, 0.4, 5, 0.1, 6, 0.1, 8, 0.25, \
+    7, 0.2, 4, 0.1, 5, 0.1, 9, 0.2)
 
-NPC = Unit(10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5)
+Lyra = Unit(500, 1, \
+    0, 0, 0, 150, \
+    0, 0, 0, 0, \
+    3, 0.2, 8, 0.8, 7, 1.1, 2, 0, \
+    2, 0.1, 5, 0.9, 8, 1, 1, 0)
 
-Douglas = Unit(32, 2, 0, 100, 0, 0, \
-    12, 0.2, 5, 0, 6, 0, 8, 0.1, \
-        7, 0.2, 4, 0, 5, 0, 9, 0.2)
+Martin = Unit(0, 4, \
+    100, 0, 0, 0, \
+    0, 0, 0, 0, \
+    3, 0.35, 0, 0, 0, 0, 0, 0, \
+    3, 0.35, 0, 0, 0, 0, 0, 0)
 
-Lyra = Unit(10, 4, 0, 0, 0, 50, \
-    3, 0.5, 8, 1.2, 7, 1.1, 2, 0.3, \
-        2, 0.1, 5, 0.9, 8, 1, 1, 0)
+Sera = Unit(0, 4, \
+    0, 100, 0, 0, \
+    0, 0, 0, 0, \
+    0, 0, 3, 0.35, 0, 0, 0, 0, \
+    0, 0, 3, 0.35, 0, 0, 0, 0)
 
-Martin = Unit(0, 6, 0, 0, 0, 0, \
-    0, 0, 2, 0.5, 0, 0, 4, 0.8, \
-        1, 0.2, 0, 0, 0, 0, 3, 0.4)
+Issac = Unit(0, 4, \
+    0, 0, 100, 0, \
+    0, 0, 0, 0, \
+    0, 0, 0, 0, 3, 0.35, 0, 0, \
+    0, 0, 0, 0, 3, 0.35, 0, 0)
 
-Sera = Unit(0, 6, 0, 0, 0, 0, \
-    0, 0, 3, 0.25, 2, 0,2, 0, 0, \
-        0, 0, 3, 0, 0, 0, 0.15)
+Perry = Unit(0, 4, \
+    0, 0, 0, 100, \
+    0, 0, 0, 0, \
+    0, 0, 0, 0, 0, 0, 3, 0.35, \
+    0, 0, 0, 0, 0, 0, 3, 0.35)
 
 def background():
     print (
@@ -309,33 +431,60 @@ def Lyra_join():
     print ("Lyra has joined the party!")
 
 def Lyra_backgroun():
-    print ("An archer from your home village. Has some potential")
+    print ("An archer from your home village. Has some potential.")
 
-def Martin_join():
-    print ("Martin has joined the party!")
+def villagers_join():
+    print ("Martin, Sera, Issac and Perry have joined the party!")
 
-def Martin_background():
-    print ("A common villager trust into an unfamliar position")
+def villagers_background():
+    print ("A common villager.")
 
-def Sera_join():
-    print ("Sera has joined the party!")
+available_quest_list = [1 ,2, 3, 4]
 
-def Sera_background():
-    print ("A common villager trust into an unfamliar position")
-
+Quest_choice = 0
 def Pick_quest():
-    print ("Pick your next quest")
+    global Quest_choice
+    if not available_quest_list:
+        print ("There are no quests available right now.")
+
+    else:
+        print ("Pick your next quest")
+
+        print ("Quest 1" , "Gold:" , Quest1.gold_reward, "Renown:" , Quest1.renown_reward, \
+            "Unit exp:" , Quest1.unit_exp_reward, "Weapon exp:" , Quest1.weapon_exp_reward , "Overall challenge rating:" , Quest1.CR)
+        
+        text = input()
+
+        if text == "1":
+            Quest_choice = 1
+
+def Confirm_quest():
+    if Quest_choice in available_quest_list:
+        if Quest_choice == 1:
+            if battle_6(Unit1, Unit2, Unit3, Unit4, Unit5, Unit6, Zombies) == 1:
+                print ("Quest complete!")
+                Quest1.victory
+            elif battle_6(Unit1, Unit2, Unit3, Unit4, Unit5, Unit6, Zombies) == 0:
+                print ("Quest failed...")
+    
+    else:
+        print("That quest isn't available, please select another.")
 
 #deployed units
 Unit1 = Douglas
 Unit2 = Lyra
 Unit3 = Martin
-unit4 = Sera
+Unit4 = Sera
+Unit5 = Issac
+Unit6 = Perry
+
+Douglas.weapon_equip(broken_spear)
 
 game_on = True
 while game_on:
-    background()
+    #background()
 
-    text = input()
+    #text = input()
 
     Pick_quest()
+    Confirm_quest()
