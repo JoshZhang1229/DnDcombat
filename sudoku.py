@@ -1,8 +1,3 @@
-'''
-2020/07/24
-The end goal is to make it easy to add more puzzles
-
-'''
 user_x = 1
 user_y = 1
 mx = 100
@@ -54,16 +49,20 @@ def bold_horizontal_gridline():
         bold_horizontal_line_count += 1
         bold_horizontal_line_y_axis += 150
 
-#font
+#fonts
 font = pygame.font.Font('freesansbold.ttf', 30)
+big_font = pygame.font.Font('freesansbold.ttf', 50)
+huge_font = pygame.font.Font('freesansbold.ttf', 80)
 
 #the numbers
 row1 = [0, 5, 0, 3, 0, 0, 6, 8, 4, 0, 0]
 row2 = [0, 0, 0, 0, 8, 0, 9, 5, 0, 0, 0]
 row3 = [0, 0, 0, 0, 0, 5, 0, 0, 9, 6, 0]
+
 row4 = [0, 0, 0, 4, 6, 9, 0, 0, 2, 5, 0]
 row5 = [0, 8, 0, 0, 7, 0, 3, 0, 0, 4, 0]
 row6 = [0, 9, 1, 0, 0, 2, 5, 3, 0, 0, 0]
+
 row7 = [0, 7, 3, 0, 0, 6, 0, 0, 0, 0, 0]
 row8 = [0, 0, 0, 1, 2, 0, 7, 0, 0, 0, 0]
 row9 = [0, 0, 6, 9, 5, 0, 0, 4, 0, 7, 0]
@@ -72,12 +71,28 @@ row9 = [0, 0, 6, 9, 5, 0, 0, 4, 0, 7, 0]
 user_row1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 user_row2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 user_row3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
 user_row4 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 user_row5 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 user_row6 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
 user_row7 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 user_row8 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 user_row9 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+#the solution
+answer_row1 = [0, 0, 9, 0, 1, 7, 0, 0, 0, 2, 0]
+answer_row2 = [0, 6, 2, 7, 0, 4, 0, 0, 1, 3, 0]
+answer_row3 = [0, 1, 4, 8, 3, 0, 2, 7, 0, 0, 0]
+
+answer_row4 = [0, 3, 7, 0, 0, 0, 8, 1, 0, 0, 0]
+answer_row5 = [0, 0, 5, 2, 0, 1, 0, 9, 6, 0, 0]
+answer_row6 = [0, 0, 0, 6, 4, 0, 0, 0, 7, 8, 0]
+
+answer_row7 = [0, 0, 0, 5, 9, 0, 4, 2, 8, 1, 0]
+answer_row8 = [0, 4, 8, 0, 0, 3, 0, 6, 5, 9, 0]
+answer_row9 = [0, 2, 0, 0, 0, 8, 1, 0, 3, 0, 0]
+
 
 #17, 65 should be the starting point of box 1,1
 #displaying the numbers
@@ -122,7 +137,6 @@ def user_selection():
 should_update_number = False
 def user_answering():
     selecting = True
-
     while selecting:
         global new_number
         global should_update_number
@@ -184,23 +198,97 @@ def updating_numbers():
         exec(update)
         should_update_number = False
 
-def main_menu():
+def title_in_game():
     title = font.render('''Sudoku!''' , True, (0, 0, 0))
     screen.blit(title, (165, 10))
+
+def checking_solution():
+    if user_row1 == answer_row1 and user_row2 == answer_row2 and user_row3 == answer_row3 and user_row4 == answer_row4\
+        and user_row5 == answer_row5 and user_row6 == answer_row6 and user_row7 == answer_row7 and \
+            user_row8 == answer_row8 and user_row9 == answer_row9:
+            return 1
+    else:
+        return 0
+
+
+
+#big functions
+def main_menu():
+    global title_screen
+    global game_selection
+
+    title = huge_font.render('''Sudoku!''' , True, (0, 0, 0))
+    screen.blit(title, (56, 130))
+
+    start_game = big_font.render('''Start''' , True, (0, 0, 0))
+    screen.blit(start_game, (165, 228))
+
+    credit = font.render('''Made by Josh Zhang''' , True, (0, 0, 0))
+    screen.blit(credit, (67, 354))
+
+    if mx > 165 and mx < 286 and my > 232 and my < 275:
+        title_screen = False
+        game_selection = True
+
+def game_on():
+    vertical_gridline()
+    horizontal_gridline()
+    bold_vertical_gridline()
+    bold_horizontal_gridline()
+    title_in_game()
+    display_numbers()
+    display_user_numbers()
+    updating_numbers()
+
+def game_selector():
+    global title_screen
+    global game_selection
+    global actual_game
+
+    back = font.render("Back" , True, (0, 0, 0))
+    screen.blit(back, (20, 450))
+
+    game_1 = big_font.render("1" , True, (0, 0, 0))
+    screen.blit(game_1 , (20, 20))
+
+    #back button
+    if mx > 16 and mx < 102 and my > 445 and my < 481:
+        game_selection = False
+        title_screen = True
+
+    #stage selection
+    if mx > 14 and mx < 52 and my > 20 and my < 66:
+        game_selection = False
+        actual_game = True
+
+def check_answer():
+    complete = big_font.render("Complete" , True, (0, 0, 0))
+    not_quite = big_font.render("Not quite..." , True, (0, 0, 0))
+
+    if checking_solution() == 1:
+        screen.blit(complete, (200, 200))
+    elif checking_solution() == 0:
+        screen.blit(not_quite, (200, 200))
+
+
+#game display function control
+title_screen = True
+game_selection = False
+actual_game = False
 
 running = True
 while running:
 
     screen.fill((252, 169, 3)) #252, 169, 3
 
-    vertical_gridline()
-    horizontal_gridline()
-    bold_vertical_gridline()
-    bold_horizontal_gridline()
-    main_menu()
-    display_numbers()
-    display_user_numbers()
-    updating_numbers()
+    if title_screen == True:
+        main_menu()
+
+    if game_selection == True:
+        game_selector()
+
+    if actual_game == True:
+        game_on()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -210,8 +298,12 @@ while running:
             mx, my = pygame.mouse.get_pos()
 
             print (mx, my)
-            if my > 50:
-                user_selection()
+            if actual_game == True:
+                if my > 50:
+                    user_selection()
+
+            if my < 50 and mx > 300:
+                check_answer()
 
 
     pygame.display.update()
