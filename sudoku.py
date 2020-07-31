@@ -261,20 +261,21 @@ def game_selector():
         game_selection = False
         actual_game = True
 
-def check_answer():
-    complete = big_font.render("Complete" , True, (0, 0, 0))
-    not_quite = big_font.render("Not quite..." , True, (0, 0, 0))
 
-    if checking_solution() == 1:
-        screen.blit(complete, (200, 200))
-    elif checking_solution() == 0:
-        screen.blit(not_quite, (200, 200))
+complete = big_font.render("Complete" , True, (0, 0, 0))
+not_quite = big_font.render("Not quite..." , True, (0, 0, 0))
+def check_answer():
+    global display_status
+    global actual_game
+    display_status = True
+    actual_game = False
 
 
 #game display function control
 title_screen = True
 game_selection = False
 actual_game = False
+display_status = False
 
 running = True
 while running:
@@ -289,6 +290,12 @@ while running:
 
     if actual_game == True:
         game_on()
+    
+    if display_status == True:
+        if checking_solution() == 1:
+            screen.blit(complete, (200, 200))
+        elif checking_solution() == 0:
+            screen.blit(not_quite, (200, 200))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -298,12 +305,25 @@ while running:
             mx, my = pygame.mouse.get_pos()
 
             print (mx, my)
-            if actual_game == True:
+
+            check_answer_gap = False
+            if display_status == True:
+                print ("come on")
+                display_status = False
+                actual_game = True
+                check_answer_gap = True
+            
+            pygame.display.update()
+
+            if actual_game == True and display_status == False:
                 if my > 50:
+                    print ("damn")
                     user_selection()
 
-            if my < 50 and mx > 300:
-                check_answer()
+                if my < 50 and mx > 300 and check_answer_gap == False:
+                    check_answer()
+            
+
 
 
     pygame.display.update()
