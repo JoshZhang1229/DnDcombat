@@ -200,10 +200,19 @@ def user_answering():
                     new_number = 0
                     selecting = False
                     should_update_number = True
+                elif event.key == pygame.K_BACKSPACE:
+                    new_number = 0
+                    selecting = False
+                    should_update_number = True
+                elif event.key == pygame.K_DELETE:
+                    new_number = 0
+                    selecting = False
+                    should_update_number = True
                 elif event.key == pygame.K_ESCAPE:
                     selecting = False
                 elif event.key == pygame.K_SPACE:
                     selecting = False
+
 
 
 def updating_numbers():
@@ -275,7 +284,7 @@ def game_selector():
     back = font.render("Back" , True, (0, 0, 0))
     screen.blit(back, (20, 450))
 
-    game_1 = big_font.render("1" , True, (0, 0, 0))
+    game_1 = big_font.render("1  2" , True, (0, 0, 0))
     screen.blit(game_1 , (20, 20))
     
 
@@ -421,5 +430,48 @@ while running:
                     actual_game = True
                     gap = True
 
+                if mx > 72 and mx < 107 and my > 22 and my < 66:
+                    #the numbers
+                    row1 = [0, 0, 0, 9, 0, 8, 0, 5, 0, 0, 0]
+                    row2 = [0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0]
+                    row3 = [0, 5, 0, 0, 4, 3, 0, 8, 0, 6, 0]
+
+                    row4 = [0, 9, 0, 6, 0, 0, 5, 0, 0, 3, 0]
+                    row5 = [0, 0, 5, 0, 0, 7, 0, 0, 0, 0, 0]
+                    row6 = [0, 0, 4, 0, 0, 0, 8, 1, 0, 9, 0]
+
+                    row7 = [0, 0, 0, 1, 3, 0, 0, 0, 0, 4, 0]
+                    row8 = [0, 0, 0, 4, 0, 0, 9, 6, 0, 0, 0]
+                    row9 = [0, 8, 3, 0, 0, 6, 0, 0, 1, 0, 0]
+
+                    #user inputed numbers
+                    user_row1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                    user_row2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                    user_row3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+                    user_row4 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                    user_row5 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                    user_row6 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+                    user_row7 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                    user_row8 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                    user_row9 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+                    #the solution
+                    answer_row1 = [0, 3, 6, 0, 7, 0, 2, 0, 4, 1, 0]
+                    answer_row2 = [0, 4, 0, 8, 5, 9, 6, 3, 7, 0, 0]
+                    answer_row3 = [0, 0, 2, 7, 0, 0, 1, 0, 9, 0, 0]
+
+                    answer_row4 = [0, 0, 8, 0, 1, 4, 0, 7, 2, 0, 0]
+                    answer_row5 = [0, 1, 0, 2, 9, 0, 3, 4, 6, 8, 0]
+                    answer_row6 = [0, 7, 0, 3, 6, 2, 0, 0, 5, 0, 0]
+
+                    answer_row7 = [0, 6, 9, 0, 0, 5, 7, 2, 8, 0, 0]
+                    answer_row8 = [0, 2, 7, 0, 8, 1, 0, 0, 3, 5, 0]
+                    answer_row9 = [0, 0, 0, 5, 2, 0, 4, 9, 0, 7, 0]
+
+                    game_selection = False
+                    actual_game = True
+                    gap = True
 
     pygame.display.update()
