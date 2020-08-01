@@ -1,0 +1,141 @@
+#setup
+import math
+import random
+# generate random integer values
+from random import seed
+from random import randint
+# seed random number generator=
+from datetime import datetime
+random.seed(datetime.now())
+
+import pygame
+
+pygame.init()
+
+screen = pygame.display.set_mode((1000,550))
+
+pygame.display.set_caption("Dungeon")
+
+stage = 1
+
+#dummy
+mx = 0
+my = 0
+
+#fonts
+font = pygame.font.Font('freesansbold.ttf', 30)
+
+#colours
+orange = (252, 169, 3)
+black = (0, 0, 0)
+
+#classes
+
+class PC():
+    def __init__ (self, base_maxhp, base_attack, base_gold, base_defense):
+        self.maxhp = base_maxhp
+        self.hp = self.maxhp
+        self.attack = base_attack
+        self.gold = base_gold
+        self.defense = base_defense
+
+class Card():
+    def __init__(self):
+        self.type = 1
+    
+        if self.type == 1:
+            self.hp = 50 * math.ceil((randint(75, 125))/100 * stage)
+            self.attack = math.ceil((randint(74, 124))/100 * stage)
+            self.gold_reward = 10 * math.ceil((randint(73, 126))/100 * stage)
+
+#game stats
+stage = 1
+cards_remaining = 10
+warrior = PC(10, 5, 3, 1)
+
+
+
+#player stats
+def display_player_stats():
+    player_hp = font.render((str(warrior.hp) + "/" + str(warrior.maxhp)), True, black)
+    
+    screen.blit(player_hp, (25, 25))
+
+#card 1
+card_1_stats = Card()
+
+card_1 = pygame.Surface((300, 400))
+card_1.fill((100, 0, 0))
+def display_card_1():
+    screen.blit(card_1, (25, 125)) #gap of 25 on both sides and beneath
+
+def display_card_1_info():
+    card_1_hp = font.render("HP" + str(card_1_stats.hp), True, (0, 0, 0))
+    card_1_attack = font.render("Attack" + str(card_1_stats.attack), True, (0, 0, 0))
+    card_1_gold_reward = font.render("Gold reward" + str(card_1_stats.gold_reward), True, (0, 0, 0))
+
+    screen.blit(card_1_hp, (50, 150))
+    screen.blit(card_1_attack, (50, 190))
+    screen.blit(card_1_gold_reward, (50, 230))
+'''
+def selecting_card_1():
+    if mx > 25 and mx < 325 and my > 125 and my < 525 and gap == False:
+        global card_1_stats
+        warrior.gold += card_1_stats.gold_reward
+        warrior.hp -= card_1_stats.attack
+        card_1_stats.hp = 0
+        gap = True
+'''
+#card 2
+
+card_2 = pygame.Surface((300, 400))
+card_2.fill((0, 100, 0))
+def display_card_2():
+    screen.blit(card_2, (350, 125)) #gap of 25 on both sides and beneath
+
+#card 3
+
+card_3 = pygame.Surface((300, 400))
+card_3.fill((0, 0, 100))
+def display_card_3():
+    screen.blit(card_3, (675, 125)) #gap of 25 on both sides and beneath
+
+zombie_image = pygame.image.load("zombie.png")
+
+def zombie_image_display():
+    screen.blit(zombie_image, (105, 312))
+
+
+
+running = True
+while running:
+
+    screen.fill(orange) #252, 169, 3
+
+    display_player_stats()
+    display_card_1()
+    display_card_2()
+    display_card_3()
+    zombie_image_display()
+    display_card_1_info()
+
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mx, my = pygame.mouse.get_pos()
+
+            gap = False
+
+            print (mx, my)
+
+            if mx > 25 and mx < 325 and my > 125 and my < 525 and gap == False:
+                warrior.gold += card_1_stats.gold_reward
+                warrior.hp -= card_1_stats.attack
+                card_1_stats.hp = 0
+                gap = True
+
+
+    pygame.display.update()
