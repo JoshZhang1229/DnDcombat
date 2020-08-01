@@ -48,11 +48,16 @@ class Card():
             self.attack = math.ceil((randint(74, 124))/100 * stage)
             self.gold_reward = 10 * math.ceil((randint(73, 126))/100 * stage)
 
+class gap():
+    def __init__(self):
+        self.gap = False
+
+gap_1 = gap()
+
 #game stats
 stage = 1
 cards_remaining = 10
 warrior = PC(10, 5, 3, 1)
-
 
 
 #player stats
@@ -77,15 +82,16 @@ def display_card_1_info():
     screen.blit(card_1_hp, (50, 150))
     screen.blit(card_1_attack, (50, 190))
     screen.blit(card_1_gold_reward, (50, 230))
-'''
+
+
 def selecting_card_1():
-    if mx > 25 and mx < 325 and my > 125 and my < 525 and gap == False:
+    if mx > 25 and mx < 325 and my > 125 and my < 525 and gap_1.gap == False:
         global card_1_stats
         warrior.gold += card_1_stats.gold_reward
         warrior.hp -= card_1_stats.attack
         card_1_stats.hp = 0
-        gap = True
-'''
+        gap_1.gap = True
+
 #card 2
 
 card_2 = pygame.Surface((300, 400))
@@ -127,15 +133,12 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             mx, my = pygame.mouse.get_pos()
 
-            gap = False
+            gap_1.gap = False
 
             print (mx, my)
 
-            if mx > 25 and mx < 325 and my > 125 and my < 525 and gap == False:
-                warrior.gold += card_1_stats.gold_reward
-                warrior.hp -= card_1_stats.attack
-                card_1_stats.hp = 0
-                gap = True
+            selecting_card_1()
+
 
 
     pygame.display.update()
