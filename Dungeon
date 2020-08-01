@@ -94,6 +94,27 @@ def display_player_stats():
     screen.blit(player_hp, (25, 25))
     screen.blit((player_gold), (25, 55))
 
+#MAIN MENU
+def main_menu():
+    global main_menu_display
+    global actual_game_display
+
+    title = font.render("Dungeon!", True, black)
+    credit = font.render("Made by Josh Zhang", True, black)
+    begin = font.render("Begin!", True, black)
+
+    screen.blit(title, (50, 150))
+    screen.blit(credit, (50, 190))
+    screen.blit(begin, (50, 230))
+
+    if mx > 1 and my > 1 and gap_1.gap == False:
+        main_menu_display = False
+        actual_game_display = True
+        gap_1.gap = True
+
+#ACTUAL GAME
+#----------------------------------------------
+
 #card 1
 card_1_stats = Card()
 
@@ -155,19 +176,35 @@ zombie_image = pygame.image.load("zombie.png")
 def zombie_image_display():
     screen.blit(zombie_image, (105, 312))
 
+#game states
+main_menu_display = True
+character_selection_display = False
+actual_game_display = False
+game_over_display = False
 
-
+#running the game
 running = True
 while running:
 
-    screen.fill(orange) #252, 169, 3
+    #controlling what the player sees
 
-    display_player_stats()
-    display_card_1()
-    display_card_2()
-    display_card_3()
-    zombie_image_display()
-    display_card_1_info()
+    screen.fill(orange) #252, 169, 3
+    if main_menu_display == True:
+        main_menu()
+
+    if character_selection_display == True:
+        pass
+
+    if actual_game_display == True:
+        display_player_stats()
+        display_card_1()
+        display_card_2()
+        display_card_3()
+        zombie_image_display()
+        display_card_1_info()
+
+    if game_over_display == True:
+        pass
 
 
     for event in pygame.event.get():
@@ -181,7 +218,13 @@ while running:
 
             print (mx, my)
 
-            selecting_card_1()
+            #main menu
+            if main_menu_display == True:
+                main_menu()
+
+            #actual game
+            if actual_game_display == True:
+                selecting_card_1()
 
 
 
