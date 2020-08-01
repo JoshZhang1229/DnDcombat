@@ -84,20 +84,16 @@ gap_1 = gap()
 stage = 1
 cards_remaining = 10
 warrior = PC(10, 5, 3, 1)
+noble = PC(5, 3, 20, 1)
 
+player = warrior
 
-#player stats
-def display_player_stats():
-    player_hp = font.render(("HP:" + str(warrior.hp) + "/" + str(warrior.maxhp)), True, black)
-    player_gold = font.render(("Gold:" + str(warrior.gold)), True, black)
-    
-    screen.blit(player_hp, (25, 25))
-    screen.blit((player_gold), (25, 55))
 
 #MAIN MENU
+#----------------------------------------------
 def main_menu():
     global main_menu_display
-    global actual_game_display
+    global character_selection_display
 
     title = font.render("Dungeon!", True, black)
     credit = font.render("Made by Josh Zhang", True, black)
@@ -109,11 +105,48 @@ def main_menu():
 
     if mx > 1 and my > 1 and gap_1.gap == False:
         main_menu_display = False
-        actual_game_display = True
+        character_selection_display = True
         gap_1.gap = True
+
+#CLASS SELECTION
+#----------------------------------------------
+def character_selection():
+    warrior = font.render("Warrior", True, black)
+    noble = font.render("Noble", True, black)
+
+    screen.blit(warrior, (250, 50))
+    screen.blit(noble, (750, 50))
+
+    pygame.draw.line(screen, black, (500, 0), (500, 550)) 
+
+def player_selecting_class():
+    global character_selection_display
+    global actual_game_display
+
+    global player
+
+    if gap_1.gap == False:
+        if mx < 500:
+            player = warrior
+            gap_1.gap = True
+        else:
+            player = noble
+            gap_1.gap = True
+        
+        character_selection_display = False
+        actual_game_display = True
+
 
 #ACTUAL GAME
 #----------------------------------------------
+
+#player stats
+def display_player_stats():
+    player_hp = font.render(("HP:" + str(player.hp) + "/" + str(player.maxhp)), True, black)
+    player_gold = font.render(("Gold:" + str(player.gold)), True, black)
+    
+    screen.blit(player_hp, (25, 25))
+    screen.blit((player_gold), (25, 55))
 
 #card 1
 card_1_stats = Card()
@@ -146,13 +179,13 @@ def selecting_card_1():
     if mx > 25 and mx < 325 and my > 125 and my < 525 and gap_1.gap == False:
         global card_1_stats
         if card_1_stats.type == 1:
-            warrior.gold += card_1_stats.gold_reward
-            warrior.hp -= card_1_stats.attack
+            player.gold += card_1_stats.gold_reward
+            player.hp -= card_1_stats.attack
             card_1_stats.hp = 0
             gap_1.gap = True
         
         elif card_1_stats.type == 2:
-            warrior.gold -= card_1_stats.gold_cost
+            player.gold -= card_1_stats.gold_cost
         
         card_1_stats.refresh()
 
@@ -176,6 +209,20 @@ zombie_image = pygame.image.load("zombie.png")
 def zombie_image_display():
     screen.blit(zombie_image, (105, 312))
 
+
+def game_over_checker():
+    global actual_game_display
+    global game_over_display
+
+    if player.hp <= 0:
+        actual_game_display = False
+        game_over_display = True
+#GAME OVER
+#---------------------------------
+def game_over_text():
+    game_over = font.render("Game Over...", True, black)
+    screen.blit(game_over, (50, 150))
+
 #game states
 main_menu_display = True
 character_selection_display = False
@@ -193,7 +240,7 @@ while running:
         main_menu()
 
     if character_selection_display == True:
-        pass
+        character_selection()
 
     if actual_game_display == True:
         display_player_stats()
@@ -202,9 +249,10 @@ while running:
         display_card_3()
         zombie_image_display()
         display_card_1_info()
+        game_over_checker()
 
     if game_over_display == True:
-        pass
+        game_over_text()
 
 
     for event in pygame.event.get():
@@ -222,9 +270,17 @@ while running:
             if main_menu_display == True:
                 main_menu()
 
+            #character selection
+            if character_selection_display == True:
+                player_selecting_class()
+
             #actual game
             if actual_game_display == True:
                 selecting_card_1()
+            
+            #game over
+            if game_over_display == True:
+                pass
 
 
 
