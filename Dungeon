@@ -1,5 +1,11 @@
 '''
-boss fight, 3 cards
+shop actually displays what it's selling
+difficulty escatlation
+3 cards
+
+BASIC DONE!
+
+ideas for classes
 '''
 
 #setup
@@ -49,16 +55,19 @@ class PC():
 class Card():
     def __init__(self, seed):
         self.seed = seed
+
+        self.type = randint(1, 2) # 1 for combat, 2 for shop
     
     def generate(self, seed):
         global claiming_reward
         global card_count
         global boss_activated
 
+        self.type = randint(1, 2) # 1 for combat, 2 for shop
+
         card_count += 1
         if card_count <= 12:
 
-            self.type = randint(1, 2) # 1 for combat, 2 for shop
         
             if self.type == 1:
                 self.hp = math.ceil(10 * (((randint(1, (1000 + seed)) % 9) - 5) * 0.05 + 1))
@@ -90,7 +99,7 @@ class Card():
                     def claiming_reward():
                         player.defense += self.reward_amount
         
-        elif card_count == 13:
+        elif card_count == 15:
             boss_activated = True
 
 class Boss():
@@ -208,7 +217,16 @@ def display_card_1_info():
         screen.blit(card_1_gold_reward, (50, 230))
 
     elif card_1_stats.type == 2: #shop
-        card_1_reward_type = font.render("Reward type" + str(card_1_stats.reward_type), True, black)
+        if card_1_stats.reward_type == 0:
+            item_type = "Healing"
+        elif card_1_stats.reward_type == 1:
+            item_type = "MaxHP"
+        elif card_1_stats.reward_type == 2:
+            item_type = "Attack"
+        elif card_1_stats.reward_type == 3:
+            item_type = "Defense"
+            
+        card_1_reward_type = font.render(item_type, True, black)
         card_1_reward_amount = font.render("Reward amount" + str(card_1_stats.reward_amount), True, black)
         card_1_gold_cost = font.render("Gold cost" + str(card_1_stats.gold_cost), True, black)
 
@@ -247,24 +265,133 @@ def skip_line():
     pygame.draw.line(screen, black, (0, 475), (1000, 475)) 
 
 #card 2
+card_2_stats = Card(2)
+
 
 card_2 = pygame.Surface((300, 400))
 card_2.fill((0, 100, 0))
 def display_card_2():
     screen.blit(card_2, (350, 125)) #gap of 25 on both sides and beneath
 
+def display_card_2_info():
+    if card_2_stats.type == 1: #enemy
+        card_2_hp = font.render("HP" + str(card_2_stats.hp), True, black)
+        card_2_attack = font.render("Attack" + str(card_2_stats.attack), True, black)
+        card_2_gold_reward = font.render("Gold reward" + str(card_2_stats.gold_reward), True, black)
+
+        screen.blit(card_2_hp, (350, 150))
+        screen.blit(card_2_attack, (350, 190))
+        screen.blit(card_2_gold_reward, (350, 230))
+
+    elif card_2_stats.type == 2: #shop
+        if card_2_stats.reward_type == 0:
+            item_type = "Healing"
+        elif card_2_stats.reward_type == 1:
+            item_type = "MaxHP"
+        elif card_2_stats.reward_type == 2:
+            item_type = "Attack"
+        elif card_2_stats.reward_type == 3:
+            item_type = "Defense"
+            
+        card_2_reward_type = font.render(item_type, True, black)
+        card_2_reward_amount = font.render("Reward amount" + str(card_2_stats.reward_amount), True, black)
+        card_2_gold_cost = font.render("Gold cost" + str(card_2_stats.gold_cost), True, black)
+
+        screen.blit(card_2_reward_type, (350, 150))
+        screen.blit(card_2_reward_amount, (350, 190))
+        screen.blit(card_2_gold_cost, (350, 230))
+
+def selecting_card_2():
+    if mx > 350 and mx < 650 and my > 125 and my < 475 and gap_1.gap == False and card_count <= 12:
+        gap_1.gap = True
+        global card_2_stats
+        if card_count > 0:
+            if card_2_stats.type == 1:
+                card_2_stats.hp -= player.attack
+                if card_2_stats.hp <= 0:
+                    player.gold += card_2_stats.gold_reward
+                    card_2_stats.generate(2)
+                elif card_2_stats.hp > 0:
+                    if card_2_stats.attack > player.defense:
+                        player.hp = player.hp + player.defense - card_2_stats.attack
+
+            elif card_2_stats.type == 2:
+                if player.gold >= card_2_stats.gold_cost:
+                    player.gold -= card_2_stats.gold_cost
+                    claiming_reward()
+                    card_2_stats.generate(2)
+        elif card_count == 0:
+            card_2_stats.generate(2)
+
+def skipping_card_2():
+    if mx > 350 and mx < 650 and my > 475 and my < 525 and gap_1.gap == False and card_count <= 12:
+        card_2_stats.generate(2)
+        gap_1.gap = True
+
+
 #card 3
+
+card_3_stats = Card(3)
 
 card_3 = pygame.Surface((300, 400))
 card_3.fill((0, 0, 100))
 def display_card_3():
     screen.blit(card_3, (675, 125)) #gap of 25 on both sides and beneath
 
-zombie_image = pygame.image.load("zombie.png")
+def display_card_3_info():
+    if card_3_stats.type == 1: #enemy
+        card_3_hp = font.render("HP" + str(card_3_stats.hp), True, black)
+        card_3_attack = font.render("Attack" + str(card_3_stats.attack), True, black)
+        card_3_gold_reward = font.render("Gold reward" + str(card_3_stats.gold_reward), True, black)
 
-def zombie_image_display():
-    screen.blit(zombie_image, (105, 312))
+        screen.blit(card_3_hp, (700, 150))
+        screen.blit(card_3_attack, (700, 190))
+        screen.blit(card_3_gold_reward, (700, 230))
 
+    elif card_3_stats.type == 2: #shop
+        if card_3_stats.reward_type == 0:
+            item_type = "Healing"
+        elif card_3_stats.reward_type == 1:
+            item_type = "MaxHP"
+        elif card_3_stats.reward_type == 2:
+            item_type = "Attack"
+        elif card_3_stats.reward_type == 3:
+            item_type = "Defense"
+            
+        card_3_reward_type = font.render(item_type, True, black)
+        card_3_reward_amount = font.render("Reward amount" + str(card_3_stats.reward_amount), True, black)
+        card_3_gold_cost = font.render("Gold cost" + str(card_3_stats.gold_cost), True, black)
+
+        screen.blit(card_3_reward_type, (700, 150))
+        screen.blit(card_3_reward_amount, (700, 190))
+        screen.blit(card_3_gold_cost, (700, 230))
+
+def selecting_card_3():
+    if mx > 675 and mx < 925 and my > 125 and my < 475 and gap_1.gap == False and card_count <= 14:
+        gap_1.gap = True
+        global card_3_stats
+        if card_count > 0:
+            if card_3_stats.type == 1:
+                card_3_stats.hp -= player.attack
+                if card_3_stats.hp <= 0:
+                    player.gold += card_3_stats.gold_reward
+                    card_3_stats.generate(3)
+                elif card_3_stats.hp > 0:
+                    if card_3_stats.attack > player.defense:
+                        player.hp = player.hp + player.defense - card_3_stats.attack
+
+            elif card_3_stats.type == 2:
+                if player.gold >= card_3_stats.gold_cost:
+                    player.gold -= card_3_stats.gold_cost
+                    claiming_reward()
+                    card_3_stats.generate(3)
+        elif card_count == 0:
+            card_3_stats.generate(3)
+
+def skipping_card_3():
+    if mx > 675 and mx < 975 and my > 475 and my < 525 and gap_1.gap == False and card_count <= 14:
+        card_3_stats.generate(3)
+        gap_1.gap = True
 
 def game_over_checker():
     global actual_game_display
@@ -280,13 +407,13 @@ def game_over_checker():
 boss_1_stats = Boss()
 
 def display_boss_info():
-    card_1_hp = font.render("HP" + str(boss_1_stats.hp), True, black)
-    card_1_attack = font.render("Attack" + str(boss_1_stats.attack), True, black)
-    card_1_gold_reward = font.render("Gold reward" + str(boss_1_stats.gold_reward), True, black)
+    boss_hp = font.render("HP" + str(boss_1_stats.hp), True, black)
+    boss_attack = font.render("Attack" + str(boss_1_stats.attack), True, black)
+    boss_gold_reward = font.render("Gold reward" + str(boss_1_stats.gold_reward), True, black)
 
-    screen.blit(card_1_hp, (350, 150))
-    screen.blit(card_1_attack, (350, 190))
-    screen.blit(card_1_gold_reward, (350, 230))
+    screen.blit(boss_hp, (350, 150))
+    screen.blit(boss_attack, (350, 190))
+    screen.blit(boss_gold_reward, (350, 230))
 
 
 def selecting_boss():
@@ -348,8 +475,10 @@ while running:
         display_card_1()
         display_card_2()
         display_card_3()
-        if card_count > 0 and card_count <= 12:
+        if card_count > 0 and card_count <= 14:
             display_card_1_info()
+            display_card_2_info()
+            display_card_3_info()
             skip_line()
         if boss_activated == True:
             display_boss_info()
@@ -381,8 +510,16 @@ while running:
 
             #actual game
             if actual_game_display == True:
+                if card_count == 0:
+                    card_1_stats.generate(1)
+                    card_2_stats.generate(2)
+                    card_3_stats.generate(3)
                 selecting_card_1()
                 skipping_card_1()
+                selecting_card_2()
+                skipping_card_2()
+                selecting_card_3()
+                skipping_card_3()
                 if boss_activated == True:
                     selecting_boss()
             
