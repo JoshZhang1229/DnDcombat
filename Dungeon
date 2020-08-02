@@ -2,7 +2,6 @@
 boss fight, 3 cards
 '''
 
-
 #setup
 import math
 import random
@@ -21,8 +20,11 @@ screen = pygame.display.set_mode((1000,550))
 
 pygame.display.set_caption("Dungeon")
 
+#game stats (setup)
 stage = 1
+card_count = 0
 
+boss_activated = False
 #dummy
 mx = 0
 my = 0
@@ -46,88 +48,63 @@ class PC():
 
 class Card():
     def __init__(self, seed):
+        self.seed = seed
+    
+    def generate(self, seed):
         global claiming_reward
+        global card_count
+        global boss_activated
 
-        self.type = randint(1, 2) # 1 for combat, 2 for shop
-    
-        if self.type == 1:
-            self.hp = math.ceil(10 * (((randint(1, (1000 + seed)) % 9) - 5) * 0.05 + 1))
-            self.attack = math.ceil(3 * (((randint(1, (2000 + seed)) % 9) - 5) * 0.05 + 1))
-            self.gold_reward = math.ceil(10 * (((randint(1, (3000 + seed)) % 9) - 5) * 0.05 + 1))
-        
-        if self.type == 2:
-            self.reward_type = randint(1, (100 + seed)) % 4 #1 healing, 2 maxhp, 3 attack, 4 defense
-            if self.reward_type == 0:
-                self.gold_cost = randint(1, 3)
-                self.reward_amount = randint(1, 10)
-                def claiming_reward():
-                    player.hp += self.reward_amount
-                    if player.hp > player.maxhp:
-                        player.hp = player.maxhp
-            elif self.reward_type == 1:
-                self.gold_cost = randint(4, 6)
-                self.reward_amount = randint(1, 3)
-                def claiming_reward():
-                    player.maxhp += self.reward_amount
-            elif self.reward_type == 2:
-                self.gold_cost = randint(1, 3)
-                self.reward_amount = randint(3, 5)
-                def claiming_reward():
-                    player.attack += self.reward_amount           
-            elif self.reward_type == 3:
-                self.gold_cost = randint(6, 10)
-                self.reward_amount = randint(1, 2)
-                def claiming_reward():
-                    player.defense += self.reward_amount  
-    
-    def refresh(self, seed):
-        global claiming_reward
+        card_count += 1
+        if card_count <= 12:
 
-        self.type = randint(1, 2) # 1 for combat, 2 for shop
-    
-        if self.type == 1:
-            self.hp = math.ceil(10 * (((randint(1, (1000 + seed)) % 9) - 5) * 0.05 + 1))
-            self.attack = math.ceil(3 * (((randint(1, (2000 + seed)) % 9) - 5) * 0.05 + 1))
-            self.gold_reward = math.ceil(10 * (((randint(1, (3000 + seed)) % 9) - 5) * 0.05 + 1))
+            self.type = randint(1, 2) # 1 for combat, 2 for shop
         
-        if self.type == 2:
-            self.reward_type = randint(1, (100 + seed)) % 4 #1 healing, 2 maxhp, 3 attack, 4 defense
-            if self.reward_type == 0:
-                self.gold_cost = randint(1, 3)
-                self.reward_amount = randint(1, 10)
-                def claiming_reward():
-                    player.hp += self.reward_amount
-                    if player.hp > player.maxhp:
-                        player.hp = player.maxhp
-            elif self.reward_type == 1:
-                self.gold_cost = randint(4, 6)
-                self.reward_amount = randint(1, 3)
-                def claiming_reward():
-                    print ('1')
-                    player.maxhp += self.reward_amount
-            elif self.reward_type == 2:
-                self.gold_cost = randint(1, 3)
-                self.reward_amount = randint(3, 5)
-                def claiming_reward():
-                    player.attack += self.reward_amount           
-            elif self.reward_type == 3:
-                self.gold_cost = randint(6, 10)
-                self.reward_amount = randint(1, 2)
-                def claiming_reward():
-                    player.defense += self.reward_amount  
+            if self.type == 1:
+                self.hp = math.ceil(10 * (((randint(1, (1000 + seed)) % 9) - 5) * 0.05 + 1))
+                self.attack = math.ceil(3 * (((randint(1, (2000 + seed)) % 9) - 5) * 0.05 + 1))
+                self.gold_reward = math.ceil(10 * (((randint(1, (3000 + seed)) % 9) - 5) * 0.05 + 1))
+            
+            if self.type == 2:
+                self.reward_type = randint(1, (100 + seed)) % 4 #0 healing, 1 maxhp, 2 attack, 3 defense
+                if self.reward_type == 0:
+                    self.gold_cost = randint(1, 3)
+                    self.reward_amount = randint(1, 10)
+                    def claiming_reward():
+                        player.hp += self.reward_amount
+                        if player.hp > player.maxhp:
+                            player.hp = player.maxhp
+                elif self.reward_type == 1:
+                    self.gold_cost = randint(4, 6)
+                    self.reward_amount = randint(1, 3)
+                    def claiming_reward():
+                        player.maxhp += self.reward_amount
+                elif self.reward_type == 2:
+                    self.gold_cost = randint(1, 3)
+                    self.reward_amount = randint(3, 5)
+                    def claiming_reward():
+                        player.attack += self.reward_amount           
+                elif self.reward_type == 3:
+                    self.gold_cost = randint(6, 10)
+                    self.reward_amount = randint(1, 2)
+                    def claiming_reward():
+                        player.defense += self.reward_amount
+        
+        elif card_count == 13:
+            boss_activated = True
 
 class Boss():
     def __init__(self):
 
         self.hp = 50 * math.ceil((randint(75, 125))/100 * stage)
-        self.attack = 5 * math.ceil((randint(74, 124))/100 * stage)
-        self.gold_reward = 50 * math.ceil((randint(73, 126))/100 * stage)
+        self.attack = 5 * math.ceil((randint(74, 126))/100 * stage)
+        self.gold_reward = 50 * math.ceil((randint(73, 127))/100 * stage)
     
-    def refresh():
+    def refresh(self):
 
         self.hp = 50 * math.ceil((randint(75, 125))/100 * stage)
-        self.attack = 5 * math.ceil((randint(74, 124))/100 * stage)
-        self.gold_reward = 50 * math.ceil((randint(73, 126))/100 * stage)
+        self.attack = 5 * math.ceil((randint(74, 126))/100 * stage)
+        self.gold_reward = 50 * math.ceil((randint(73, 127))/100 * stage)
 
 class gap():
     def __init__(self):
@@ -138,7 +115,8 @@ gap_1 = gap()
 #game stats
 stage = 1
 cards_remaining = 10
-warrior = PC(10, 5, 5, 1)
+#remember that classes need to to be updates in the game restart function as well
+warrior = PC(10, 5, 6, 2)
 noble = PC(5, 3, 20, 1)
 
 player = warrior
@@ -201,11 +179,15 @@ def display_player_stats():
     player_gold = font.render(("Gold:" + str(player.gold)), True, black)
     player_attack = font.render(("Attack:" + str(player.attack)), True, black)
     player_defense = font.render(("Defense:" + str(player.defense)), True, black)
+    player_card_count = font.render(("Card Count:" + str(card_count)), True, black)
+    player_stage_count = font.render(("Stage Count:" + str(stage)), True, black)
     
     screen.blit(player_hp, (25, 25))
     screen.blit(player_gold, (25, 55))
     screen.blit(player_attack, (225, 25))
     screen.blit(player_defense, (225, 55))
+    screen.blit(player_card_count, (425, 25))
+    screen.blit(player_stage_count, (425, 55))
 
 #card 1
 card_1_stats = Card(1)
@@ -235,26 +217,30 @@ def display_card_1_info():
         screen.blit(card_1_gold_cost, (50, 230))
 
 def selecting_card_1():
-    if mx > 25 and mx < 325 and my > 125 and my < 475 and gap_1.gap == False:
+    if mx > 25 and mx < 325 and my > 125 and my < 475 and gap_1.gap == False and card_count <= 12:
         gap_1.gap = True
         global card_1_stats
-        if card_1_stats.type == 1:
-            card_1_stats.hp -= player.attack
-            if card_1_stats.hp <= 0:
-                player.gold += card_1_stats.gold_reward
-                card_1_stats.refresh(1)
-            elif card_1_stats.hp > 0:
-                player.hp -= card_1_stats.attack
+        if card_count > 0:
+            if card_1_stats.type == 1:
+                card_1_stats.hp -= player.attack
+                if card_1_stats.hp <= 0:
+                    player.gold += card_1_stats.gold_reward
+                    card_1_stats.generate(1)
+                elif card_1_stats.hp > 0:
+                    if card_1_stats.attack > player.defense:
+                        player.hp = player.hp + player.defense - card_1_stats.attack
 
-        elif card_1_stats.type == 2:
-            if player.gold >= card_1_stats.gold_cost:
-                player.gold -= card_1_stats.gold_cost
-                claiming_reward()
-                card_1_stats.refresh(1)
+            elif card_1_stats.type == 2:
+                if player.gold >= card_1_stats.gold_cost:
+                    player.gold -= card_1_stats.gold_cost
+                    claiming_reward()
+                    card_1_stats.generate(1)
+        elif card_count == 0:
+            card_1_stats.generate(1)
 
 def skipping_card_1():
-    if mx > 25 and mx < 325 and my > 475 and my < 525 and gap_1.gap == False:
-        card_1_stats.refresh(1)
+    if mx > 25 and mx < 325 and my > 475 and my < 525 and gap_1.gap == False and card_count <= 12:
+        card_1_stats.generate(1)
         gap_1.gap = True
 
 def skip_line():
@@ -289,8 +275,39 @@ def game_over_checker():
         game_over_display = True
 
 #BOSS FIGHT
+#---------------------------------
 
-boss_1 = Boss()
+boss_1_stats = Boss()
+
+def display_boss_info():
+    card_1_hp = font.render("HP" + str(boss_1_stats.hp), True, black)
+    card_1_attack = font.render("Attack" + str(boss_1_stats.attack), True, black)
+    card_1_gold_reward = font.render("Gold reward" + str(boss_1_stats.gold_reward), True, black)
+
+    screen.blit(card_1_hp, (350, 150))
+    screen.blit(card_1_attack, (350, 190))
+    screen.blit(card_1_gold_reward, (350, 230))
+
+
+def selecting_boss():
+    global boss_activated
+    global card_count
+    global stage
+
+    if mx > 350 and mx < 650 and my > 125 and my < 525 and gap_1.gap == False:
+        gap_1.gap = True
+        global boss_1_stats
+
+        boss_1_stats.hp -= player.attack
+        if boss_1_stats.hp <= 0:
+            player.gold += boss_1_stats.gold_reward
+            boss_1_stats.refresh()
+            boss_activated = False
+            card_count = 0
+            stage += 1
+        elif boss_1_stats.hp > 0:
+            if boss_1_stats.attack > player.defense:
+                player.hp = player.hp + player.defense - boss_1_stats.attack
 
 #GAME OVER
 #---------------------------------
@@ -331,10 +348,13 @@ while running:
         display_card_1()
         display_card_2()
         display_card_3()
-        zombie_image_display()
-        display_card_1_info()
+        if card_count > 0 and card_count <= 12:
+            display_card_1_info()
+            skip_line()
+        if boss_activated == True:
+            display_boss_info()
         game_over_checker()
-        skip_line()
+
 
     if game_over_display == True:
         game_over_text()
@@ -363,6 +383,8 @@ while running:
             if actual_game_display == True:
                 selecting_card_1()
                 skipping_card_1()
+                if boss_activated == True:
+                    selecting_boss()
             
             #game over
             if game_over_display == True:
