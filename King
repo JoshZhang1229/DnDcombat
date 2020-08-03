@@ -91,10 +91,14 @@ def new_event():
 
 def tax_knights():
     global dilema
+    global result_yes
+    global result_no
     global agree_opinion_changes
     global disagree_opinion_changes
 
     dilema = "Should we tax knights?"
+    result_yes = "Arthus is pissed"
+    result_no = "Arthur is relieved"
     
     def agree_opinion_changes():
         you.Arthur -= 200
@@ -106,10 +110,14 @@ def tax_knights():
 
 def tax_wizards():
     global dilema
+    global result_yes
+    global result_no
     global agree_opinion_changes
     global disagree_opinion_changes
 
     dilema = "Should we tax wizards?"
+    result_yes = "Karla is pissed"
+    result_no = "Karla is relieved"
     
     def agree_opinion_changes():
         you.Arthur += 200
@@ -147,10 +155,12 @@ while True:
 
             if my > 650 and mx < 512:
                 agree = True
+                result = result_yes
                 apply_result.gap = True
             
             elif my > 650 and mx >= 512:
                 agree = False
+                result = result_no
                 apply_result.gap = True
             
             if apply_result.gap == True:
