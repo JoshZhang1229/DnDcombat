@@ -1,0 +1,164 @@
+#setup
+import math
+import random
+# generate random integer values
+from random import seed
+from random import randint
+# seed random number generator=
+from datetime import datetime
+random.seed(datetime.now())
+
+import pygame
+pygame.init()
+
+SIZE = WIDTH, HEIGHT = (1024, 720)
+FPS = 30
+screen = pygame.display.set_mode(SIZE, pygame.RESIZABLE)
+clock = pygame.time.Clock()
+
+def blit_text(surface, text, pos, font, color=pygame.Color('black')):
+    words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words.
+    space = font.size(' ')[0]  # The width of a space.
+    max_width, max_height = surface.get_size()
+    x, y = pos
+    for line in words:
+        for word in line:
+            word_surface = font.render(word, 0, color)
+            word_width, word_height = word_surface.get_size()
+            if x + word_width >= max_width:
+                x = pos[0]  # Reset the x.
+                y += word_height  # Start on new row.
+            surface.blit(word_surface, (x, y))
+            x += word_width + space
+        x = pos[0]  # Reset the x.
+        y += word_height  # Start on new row.
+
+
+#DESIGN
+#-------------------------------------
+
+#font
+font = pygame.font.SysFont('Arial', 32)
+font_huge = pygame.font.SysFont('Arial', 64)
+
+
+class Monarch():
+    def __init__(self, Arthur, Karla):
+        self.Arthur = Arthur
+        self.Karla = Karla
+
+you = Monarch(500, 500)
+
+class gap():
+    def __init__(self):
+        self.gap = False
+
+def advisor_opinion_text():
+    opinions = "Arthur:" + str(you.Arthur) + "Karla:" + str(you.Karla)
+    blit_text(screen, opinions, (20, 600), font)
+
+def answer_text():
+    yes = "YES"
+    blit_text(screen, yes, (20, 665), font_huge)
+    no = "NO"
+    blit_text(screen, no, (532, 665), font_huge)
+
+    pygame.draw.line(screen, (0, 0, 0), (0, 650), (1024, 650))
+    pygame.draw.line(screen, (0, 0, 0), (512, 650), (512, 720)) 
+
+
+dilema = '''Dilema
+'''
+
+result = '''Result
+'''
+
+def agree_opinion_changes():
+    you.Arthur += 50
+    you.Karla -= 50
+
+def disagree_opinion_changes():
+    you.Arthur -= 100
+    you.Karla += 100
+
+#EVENTS
+#---------------------------------
+
+event_list = ["tax_knights()" , "tax_wizards()"]
+
+def new_event():
+    eval(random.choice(event_list))
+
+def tax_knights():
+    global dilema
+    global agree_opinion_changes
+    global disagree_opinion_changes
+
+    dilema = "Should we tax knights?"
+    
+    def agree_opinion_changes():
+        you.Arthur -= 200
+        you.Karla += 200
+    
+    def disagree_opinion_changes():
+        you.Arthur += 200
+        you.Karla -= 200
+
+def tax_wizards():
+    global dilema
+    global agree_opinion_changes
+    global disagree_opinion_changes
+
+    dilema = "Should we tax wizards?"
+    
+    def agree_opinion_changes():
+        you.Arthur += 200
+        you.Karla -= 200
+    
+    def disagree_opinion_changes():
+        you.Arthur -= 200
+        you.Karla += 200
+
+new_game = True
+apply_result = gap()
+#the game
+while True:
+
+    dt = clock.tick(FPS) / 1000
+
+    screen.fill(pygame.Color('white'))
+
+    blit_text(screen, dilema, (20, 20), font)
+    blit_text(screen, result, (20, 300), font)
+    advisor_opinion_text()
+    answer_text()
+
+    if new_game == True:
+        new_game = False
+        new_event()
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            quit()
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mx, my = pygame.mouse.get_pos()
+            print (mx, my)
+
+            if my > 650 and mx < 512:
+                agree = True
+                apply_result.gap = True
+            
+            elif my > 650 and mx >= 512:
+                agree = False
+                apply_result.gap = True
+            
+            if apply_result.gap == True:
+                apply_result.gap = False
+                if agree == True:
+                    agree_opinion_changes()
+                elif agree == False:
+                    disagree_opinion_changes()
+                new_event()
+
+    pygame.display.update()
