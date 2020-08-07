@@ -43,19 +43,38 @@ font_huge = pygame.font.SysFont('Arial', 64)
 
 
 class Monarch():
-    def __init__(self, Arthur, Karla):
-        self.Arthur = Arthur
-        self.Karla = Karla
+    def __init__(self, Barbarian, Fighter, Monk, Rogue, Paladin, Ranger, \
+        Wizard, Cleric, Druid, Warlock, Sorcerer, Bard, Artificer):
+        self.Barbarian = Barbarian
+        self.Fighter = Fighter
+        self.Monk = Monk
+        self.Rogue = Rogue
+        self.Paladin = Paladin
+        self.Ranger = Ranger
+        self.Wizard = Wizard
+        self.Cleric = Cleric
+        self.Druid = Druid
+        self.Warlock = Warlock
+        self.Sorcerer = Sorcerer
+        self.Bard = Bard
+        self.Artificer = Artificer
 
-you = Monarch(500, 500)
+
+you = Monarch(500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500)
 
 class gap():
     def __init__(self):
         self.gap = False
 
 def advisor_opinion_text():
-    opinions = "Arthur:" + str(you.Arthur) + "Karla:" + str(you.Karla)
-    blit_text(screen, opinions, (20, 600), font)
+    opinions_1 = "Barbarian:" + str(you.Barbarian) + " Fighter:" + str(you.Fighter) + " Monk:" + str(you.Monk) + \
+        " Rogue:" + str(you.Rogue) + " Paladin:" + str(you.Paladin) + " Ranger:" + str(you.Ranger) + \
+            " Wizard:" + str(you.Wizard) + " Cleric:" + str(you.Cleric) + " Druid:" + str(you.Druid) + \
+                " Warlock:" + str(you.Warlock) + " Sorcerer:" + str(you.Sorcerer) + " Bard:" + str(you.Bard) + \
+                    " Artificer:" + str(you.Artificer)
+
+    blit_text(screen, opinions_1, (20, 600), font)
+
 
 def answer_text():
     yes = "YES"
@@ -73,42 +92,41 @@ dilema = '''Dilema
 result = '''Result
 '''
 
+#this is just setup
 def agree_opinion_changes():
-    you.Arthur += 50
-    you.Karla -= 50
+    you.Fighter += 0
 
 def disagree_opinion_changes():
-    you.Arthur -= 100
-    you.Karla += 100
+    you.Fighter -= 0
 
 #EVENTS
 #---------------------------------
 
-event_list = ["tax_knights()" , "tax_wizards()"]
+event_list = ["event_1()" , "event_2()"]
 
 def new_event():
     eval(random.choice(event_list))
 
-def tax_knights():
+def event_1():
     global dilema
     global result_yes
     global result_no
     global agree_opinion_changes
     global disagree_opinion_changes
 
-    dilema = "Should we tax knights?"
-    result_yes = "Arthus is pissed"
-    result_no = "Arthur is relieved"
+    dilema = "Should we build more libraries?"
+    result_yes = "some people are happy"
+    result_no = "some people are sad"
     
     def agree_opinion_changes():
-        you.Arthur -= 200
-        you.Karla += 200
+        you.Fighter -= 200
+        you.Bard += 200
     
     def disagree_opinion_changes():
-        you.Arthur += 200
-        you.Karla -= 200
+        you.Fighter += 200
+        you.Bard -= 200
 
-def tax_wizards():
+def event_2():
     global dilema
     global result_yes
     global result_no
@@ -120,12 +138,12 @@ def tax_wizards():
     result_no = "Karla is relieved"
     
     def agree_opinion_changes():
-        you.Arthur += 200
-        you.Karla -= 200
+        you.Fighter += 200
+        you.Bard -= 200
     
     def disagree_opinion_changes():
-        you.Arthur -= 200
-        you.Karla += 200
+        you.Fighter -= 200
+        you.Bard += 200
 
 new_game = True
 apply_result = gap()
