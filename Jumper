@@ -1,0 +1,198 @@
+'''
+2020/08/23
+to-do: 
+procedural generation of obstacles
+obstacle collision
+high score
+ramping diificulty
+game over/restart
+---
+music
+not showing final frame, can be frustrating of not hnowing how you died
+generating obstalce colours?
+'''
+
+#setup
+import math
+import random
+# generate random integer values
+from random import seed
+from random import randint
+# seed random number generator=
+from datetime import datetime
+random.seed(datetime.now())
+
+import math
+
+import pygame
+
+pygame.init()
+
+screen = pygame.display.set_mode((800, 600))
+
+pygame.display.set_caption("Jumper")
+
+#colours
+black = (0, 0, 0)
+cyan = (52, 225, 235)
+light_orange = (252, 169, 3)
+red = (255, 0, 0)
+white = (255, 255, 255)
+
+#fonts
+font = pygame.font.Font('freesansbold.ttf', 30)
+
+#starting player height
+player_height = 800
+
+def player_display():
+    player_icon = pygame.Rect(100, player_height - 50, 50, 50) #(starting x, starting y, x length, y length)
+    pygame.draw.rect(screen, cyan, player_icon)
+
+def gravity():
+    global player_height
+    player_height += 8
+
+def floor_and_ceiling():
+    pygame.draw.line(screen, black, (0, 500), (800, 500))
+    pygame.draw.line(screen, black, (0, 50), (800, 50)) #50 * 50
+
+def solid_floor():
+    global player_height
+    if player_height > 500:
+        player_height = 500
+
+def solid_ceiling():
+    global player_height
+    if player_height < 130: #seems to be based on player's jump: 100 + x
+        player_height = 130
+
+def leap():
+    global player_height
+    keys = pygame.key.get_pressed()  #checking pressed keys
+    if keys[pygame.K_SPACE]:
+        player_height -= 30
+
+
+
+
+
+
+obstacle_height_1 = randint(50, 400)
+def obstacle_height_generation_1():
+    global obstacle_height_1
+    obstacle_height_1 = randint(50, 400)
+
+obstacle_closing_in_1 = 800
+def obstacle_1():
+    block1 = pygame.Rect(int(obstacle_closing_in_1), int(obstacle_height_1), 100, 100) #100 * 100
+    pygame.draw.rect(screen, red, block1)
+
+obstacle_height_2 = randint(50, 400)
+def obstacle_height_generation_2():
+    global obstacle_height_2
+    obstacle_height_2 = randint(50, 400)
+
+obstacle_closing_in_2 = 800
+def obstacle_2():
+    block2 = pygame.Rect(int(obstacle_closing_in_2), int(obstacle_height_2), 100, 100) #100 * 100
+    pygame.draw.rect(screen, white, block2)
+
+def collision():
+    if obstacle_height_1 < player_height and player_height < obstacle_height_1 + 150 and 0 < obstacle_closing_in_1 and obstacle_closing_in_1 < 150 or \
+        obstacle_height_2 < player_height and player_height < obstacle_height_2 + 150 and 0 < obstacle_closing_in_2 and obstacle_closing_in_2 < 150:
+
+        reset()
+
+
+start = pygame.time.get_ticks()
+seconds = 0
+def point_counter():
+    number = font.render("Score: " + str(seconds), True, black)
+    box_print = screen.blit(number, (0, 0))
+
+nice = 0
+def high_score_counter():
+    global nice
+    if seconds > nice:
+        nice = seconds
+    best = font.render("High Score: " + str(nice), True, black)
+    box_print = screen.blit(best, (550, 0))
+
+def reset():
+    global player_height
+    global start
+
+    player_height = 800
+    start = pygame.time.get_ticks()
+
+    print("reset")
+
+#the loop
+running = True
+while running:
+
+    screen.fill(light_orange)
+
+    seconds = math.floor((pygame.time.get_ticks() - start)/1000)
+    mili_sec = (pygame.time.get_ticks() - start)/1000
+
+    point_counter()
+
+    high_score_counter()
+
+    player_display()
+
+    floor_and_ceiling()
+
+    gravity()
+
+    solid_floor()
+
+    solid_ceiling()
+    
+    leap()
+
+    if seconds < 5:
+        speed = 10
+    else:
+        speed = 10 + mili_sec * 0.25
+    if speed > 25:
+        speed = 25
+
+    ob1_start = 0
+    ob2_start = 0
+
+    if pygame.time.get_ticks() - start > 1000:
+        obstacle_1()
+        obstacle_closing_in_1 -= speed
+    else:
+        obstacle_closing_in_1 = 800
+    
+    if pygame.time.get_ticks() - start > 1700:
+        obstacle_2()
+        obstacle_closing_in_2 -= speed
+    else:
+        obstacle_closing_in_2 = 800
+
+    if obstacle_closing_in_1 < -50:
+        obstacle_closing_in_1 = 800
+        obstacle_height_generation_1()
+
+    if obstacle_closing_in_2 <  -50:
+        obstacle_closing_in_2 = 800
+        obstacle_height_generation_2()
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+        '''
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                reset()
+        '''
+
+    collision()
+
+    pygame.display.update()
