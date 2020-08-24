@@ -6,9 +6,9 @@ obstacle collision
 high score
 ramping diificulty
 game over/restart
+not showing final frame, can be frustrating of not hnowing how you died
 ---
 music
-not showing final frame, can be frustrating of not hnowing how you died
 generating obstalce colours?
 '''
 
@@ -73,11 +73,6 @@ def leap():
     if keys[pygame.K_SPACE]:
         player_height -= 30
 
-
-
-
-
-
 obstacle_height_1 = randint(50, 400)
 def obstacle_height_generation_1():
     global obstacle_height_1
@@ -103,7 +98,6 @@ def collision():
         obstacle_height_2 < player_height and player_height < obstacle_height_2 + 150 and 0 < obstacle_closing_in_2 and obstacle_closing_in_2 < 150:
 
         reset()
-
 
 start = pygame.time.get_ticks()
 seconds = 0
@@ -156,12 +150,11 @@ while running:
     if seconds < 5:
         speed = 10
     else:
-        speed = 10 + mili_sec * 0.25
-    if speed > 25:
-        speed = 25
+        speed = 10 + mili_sec * 0.15
+    if speed > 18:
+        speed = 18
 
-    ob1_start = 0
-    ob2_start = 0
+    #print (speed)
 
     if pygame.time.get_ticks() - start > 1000:
         obstacle_1()
@@ -186,12 +179,6 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
-        '''
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                reset()
-        '''
 
     collision()
 
